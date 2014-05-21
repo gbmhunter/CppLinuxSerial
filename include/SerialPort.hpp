@@ -2,7 +2,7 @@
 //! @file 			SerialPort.hpp
 //! @author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
 //! @created		2014/01/07
-//! @last-modified 	2014/05/14
+//! @last-modified 	2014/05/21
 //! @brief			The main serial port class.
 //! @details
 //!					See README.rst in repo root dir for more info.
@@ -50,6 +50,10 @@ namespace SerialPort
 		//! @brief		Controls what happens when Read() is called.
 		//! @param		numOfCharToWait		Minimum number of characters to wait for before returning. Set to 0 for non-blocking mode.
 		void SetNumCharsToWait(uint32_t numCharsToWait);
+
+		//! @brief		Enables/disables echo.
+		//! param		echoOn		Pass in true to enable echo, false to disable echo.
+		void EnableEcho(bool echoOn);
 
 		//! @brief		Opens the COM port for use.
 		//! @throws		{std::runtime_error} if filename has not been set.

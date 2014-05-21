@@ -11,8 +11,8 @@ Serial port library written in C++
 
 - Author: gbmhunter <gbmhunter@gmail.com> (http://www.cladlab.com)
 - Created: 2014/01/07
-- Last Modified: 2014/05/15
-- Version: v1.0.0.0
+- Last Modified: 2014/05/21
+- Version: v1.0.1.0
 - Company: CladLabs
 - Project: Free Code Libraries
 - Language: C++
@@ -89,5 +89,6 @@ Changelog
 ========= ========== ===================================================================================================
 Version   Date       Comment
 ========= ========== ===================================================================================================
-v1.0.0.0  2013/05/15 Initial commit. serial-port-cpp library has basic functions up and running.
+v1.0.1.0  2014/05/21 Added ability to enable/disable echo with 'SerialPort::EnableEcho()'.
+v1.0.0.0  2014/05/15 Initial commit. serial-port-cpp library has basic functions up and running.
 ========= ========== ===================================================================================================

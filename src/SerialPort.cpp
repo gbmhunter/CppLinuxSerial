@@ -2,7 +2,7 @@
 //! @file 			SerialPort.cpp
 //! @author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
 //! @created		2014/01/07
-//! @last-modified 	2014/05/15
+//! @last-modified 	2014/05/21
 //! @brief			The main serial port class.
 //! @details
 //!					See README.rst in repo root dir for more info.
@@ -116,6 +116,16 @@ namespace SerialPort
 
 		// If code reaches here, open and config must of been successful
 
+	}
+
+	void SerialPort::EnableEcho(bool echoOn)
+	{
+		termios settings = this->GetTermios();
+		settings.c_lflag = echoOn
+					   ? (settings.c_lflag |   ECHO )
+					   : (settings.c_lflag & ~(ECHO));
+		//tcsetattr( STDIN_FILENO, TCSANOW, &settings );
+		this->SetTermios(settings);
 	}
 
 	void SerialPort::SetEverythingToCommonDefaults()
