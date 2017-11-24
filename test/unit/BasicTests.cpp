@@ -23,21 +23,6 @@ namespace {
     class BasicTests : public ::testing::Test {
     protected:
 
-        static void SetUpTestCase() {
-            GetTestUtil().CreateVirtualSerialPortPair();
-        }
-
-        static void TearDownTestCase() {
-            std::cout << "Destroying virtual serial ports..." << std::endl;
-            GetTestUtil().CloseSerialPorts();
-        }
-
-        static TestUtil& GetTestUtil() {
-            static TestUtil testUtil;
-            return testUtil;
-        }
-
-
         BasicTests() {
         }
 
@@ -51,17 +36,6 @@ namespace {
     TEST_F(BasicTests, CanBeConstructed) {
         SerialPort serialPort;
         EXPECT_EQ(true, true);
-    }
-
-    TEST_F(BasicTests, BaudRateSetCorrectly) {
-        SerialPort serialPort0(device0_, BaudRate::B_57600);
-        serialPort0.Open();
-        auto retVal = TestUtil::Exec("stty -a -F " + device0_);
-        EXPECT_NE(std::string::npos, retVal.find("speed 57600 baud"));
-
-        serialPort0.SetBaudRate(BaudRate::B_115200);
-        retVal = TestUtil::Exec("stty -a -F " + device0_);
-        EXPECT_NE(std::string::npos, retVal.find("speed 115200 baud"));
     }
 
     TEST_F(BasicTests, CanOpen) {

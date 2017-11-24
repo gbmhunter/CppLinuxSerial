@@ -6,8 +6,8 @@ CppLinuxSerial
 Serial port library written in C++
 ----------------------------------
 
-.. image:: https://api.travis-ci.org/gbmhunter/serial-port-cpp.png?branch=master   
-	:target: https://travis-ci.org/gbmhunter/serial-port-cpp
+.. image:: https://api.travis-ci.org/gbmhunter/CppLinuxSerial.png?branch=master
+	:target: https://travis-ci.org/gbmhunter/CppLinuxSerial
 
 .. role:: bash(code)
 	:language: bash
@@ -34,11 +34,13 @@ Dependencies
 
 The following table lists all of the libraries dependencies.
 
-====================== ==================== ======================================================================
-Dependency             Delivery             Usage
-====================== ==================== ======================================================================
-<stdio.h>              Standard C library   snprintf()
-====================== ==================== ======================================================================
+====================== ======================================================================
+Dependency             Comments
+====================== ======================================================================
+C++14                  C++14 used for strongly typed enums, std::chrono and literals.
+<stdio.h>              snprintf()
+stty                   Used in unit tests to verify the serial port is configured correctly.
+====================== ======================================================================
 
 Issues
 ======
@@ -48,20 +50,7 @@ See GitHub Issues.
 Usage
 =====
 
-In main.c add...
-
-::
-
-	
-
-	
-	int main()
-	{
-		
-	
-	}
-	
-
+Nothing here yet...
 	
 FAQ
 ===
@@ -72,9 +61,4 @@ FAQ
 Changelog
 =========
 
-========= ========== ===================================================================================================
-Version   Date       Comment
-========= ========== ===================================================================================================
-v1.0.1.0  2014/05/21 Added ability to enable/disable echo with 'SerialPort::EnableEcho()'.
-v1.0.0.0  2014/05/15 Initial commit. serial-port-cpp library has basic functions up and running.
-========= ========== ===================================================================================================
+See CHANGELOG.md.

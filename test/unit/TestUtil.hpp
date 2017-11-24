@@ -47,30 +47,20 @@ namespace mn {
                 return result;
             }
 
-            void CreateVirtualSerialPortPair() {
+            static void CreateVirtualSerialPortPair() {
                 std::cout << "Creating virtual serial port pair..." << std::endl;
-//                StartProcess("sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11");
-//                std::this_thread::sleep_for(1s);
-//                StartProcess("sudo chmod a+rw /dev/ttyS10");
-//                StartProcess("sudo chmod a+rw /dev/ttyS11");
-//                std::this_thread::sleep_for(1s);
-//                std::cout << "Finished creating virtual serial port pair." << std::endl;
-//                std::system("./run.sh");
                 std::system("nohup sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11 &");
-                auto pid = std::system("echo $!");
-                std::cout << "pid = " << pid << std::endl;
+
+                // Hacky! Since socat is detached, we have no idea at what point it has created
+                // ttyS10 and ttyS11. Assume 1 second is long enough...
                 std::this_thread::sleep_for(1s);
                 std::system("sudo chmod a+rw /dev/ttyS10");
                 std::system("sudo chmod a+rw /dev/ttyS11");
             }
 
-            void CloseSerialPorts() {
-//                for(const auto& filePointer : processes_) {
-//                    std::cout << "Sending SIGINT..." << std::endl;
-//                    kill(filePointer.pid, SIGINT);
-//                    std::cout << "Calling pclose2()..." << std::endl;
-//                    pclose2(filePointer.fp, filePointer.pid);
-//                }
+            static void CloseSerialPorts() {
+                // Dangerous! Kills all socat processes running
+                // on computer
                 std::system("sudo pkill socat");
             }
 
