@@ -22,11 +22,11 @@ public:
     // Override this to define how to set up the environment.
     virtual void SetUp() {
         std::cout << __PRETTY_FUNCTION__ << " called." << std::endl;
-        TestUtil::CreateVirtualSerialPortPair();
+        TestUtil::GetInstance().CreateVirtualSerialPortPair();
     }
     // Override this to define how to tear down the environment.
     virtual void TearDown() {
-        TestUtil::CloseSerialPorts();
+        TestUtil::GetInstance().CloseSerialPorts();
     }
 };
 

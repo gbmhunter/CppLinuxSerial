@@ -29,8 +29,9 @@ namespace {
         virtual ~BasicTests() {
         }
 
-        std::string device0_ = "/dev/ttyS10";
-        std::string device1_ = "/dev/ttyS11";
+        std::string device0Name_ = TestUtil::GetInstance().GetDevice0Name();
+        std::string device1Name_ = TestUtil::GetInstance().GetDevice1Name();
+
     };
 
     TEST_F(BasicTests, CanBeConstructed) {
@@ -39,15 +40,15 @@ namespace {
     }
 
     TEST_F(BasicTests, CanOpen) {
-        SerialPort serialPort0(device0_, BaudRate::B_57600);
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
         serialPort0.Open();
     }
 
     TEST_F(BasicTests, ReadWrite) {
-        SerialPort serialPort0(device0_, BaudRate::B_57600);
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
         serialPort0.Open();
 
-        SerialPort serialPort1(device1_, BaudRate::B_57600);
+        SerialPort serialPort1(device1Name_, BaudRate::B_57600);
         serialPort1.Open();
 
         serialPort0.Write("Hello");
@@ -60,10 +61,10 @@ namespace {
 
 
     TEST_F(BasicTests, ReadWriteDiffBaudRates) {
-        SerialPort serialPort0(device0_, BaudRate::B_9600);
+        SerialPort serialPort0(device0Name_, BaudRate::B_9600);
         serialPort0.Open();
 
-        SerialPort serialPort1(device1_, BaudRate::B_57600);
+        SerialPort serialPort1(device1Name_, BaudRate::B_57600);
         serialPort1.Open();
 
         serialPort0.Write("Hello");

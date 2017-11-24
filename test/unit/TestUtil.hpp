@@ -30,10 +30,16 @@ namespace mn {
         class TestUtil {
 
         public:
+
+            static TestUtil& GetInstance() {
+                static TestUtil testUtil;
+                return testUtil;
+            }
+
             /// \brief      Executes a command on the Linux command-line.
             /// \details    Blocks until command is complete.
             /// \throws     std::runtime_error is popen() fails.
-            static std::string Exec(const std::string &cmd) {
+            std::string Exec(const std::string &cmd) {
                 std::array<char, 128> buffer;
                 std::string result;
                 std::shared_ptr<FILE> pipe(popen(cmd.c_str(), "r"), pclose);
@@ -47,7 +53,7 @@ namespace mn {
                 return result;
             }
 
-            static void CreateVirtualSerialPortPair() {
+            void CreateVirtualSerialPortPair() {
                 std::cout << "Creating virtual serial port pair..." << std::endl;
                 std::system("nohup sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11 &");
 
@@ -58,10 +64,27 @@ namespace mn {
                 std::system("sudo chmod a+rw /dev/ttyS11");
             }
 
-            static void CloseSerialPorts() {
+            void CloseSerialPorts() {
                 // Dangerous! Kills all socat processes running
                 // on computer
                 std::system("sudo pkill socat");
+            }
+
+            std::string GetDevice0Name() {
+                return device0Name_;
+            }
+
+            std::string GetDevice1Name() {
+                return device1Name_;
+            }
+
+            std::string device0Name_ = "/dev/ttyS10";
+            std::string device1Name_ = "/dev/ttyS11";
+
+        protected:
+
+            TestUtil() {
+
             }
 
         };

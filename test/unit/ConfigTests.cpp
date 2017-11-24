@@ -29,32 +29,31 @@ namespace {
         virtual ~ConfigTests() {
         }
 
-        std::string device0_ = "/dev/ttyS10";
-        std::string device1_ = "/dev/ttyS11";
+        std::string device0Name_ = TestUtil::GetInstance().GetDevice0Name();
     };
 
     TEST_F(ConfigTests, BaudRateSetCorrectly) {
-        SerialPort serialPort0(device0_, BaudRate::B_57600);
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
         serialPort0.Open();
-        auto retVal = TestUtil::Exec("stty -a -F " + device0_);
+        auto retVal = TestUtil::GetInstance().Exec("stty -a -F " + device0Name_);
         EXPECT_NE(std::string::npos, retVal.find("speed 57600 baud"));
 
         serialPort0.SetBaudRate(BaudRate::B_115200);
-        retVal = TestUtil::Exec("stty -a -F " + device0_);
+        retVal = TestUtil::GetInstance().Exec("stty -a -F " + device0Name_);
         EXPECT_NE(std::string::npos, retVal.find("speed 115200 baud"));
     }
 
     TEST_F(ConfigTests, CanonicalModeOff) {
-        SerialPort serialPort0(device0_, BaudRate::B_57600);
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
         serialPort0.Open();
-        auto retVal = TestUtil::Exec("stty -a -F " + device0_);
+        auto retVal = TestUtil::GetInstance().Exec("stty -a -F " + device0Name_);
         EXPECT_NE(std::string::npos, retVal.find("-icanon"));
     }
 
     TEST_F(ConfigTests, EchoModeOff) {
-        SerialPort serialPort0(device0_, BaudRate::B_57600);
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
         serialPort0.Open();
-        auto retVal = TestUtil::Exec("stty -a -F " + device0_);
+        auto retVal = TestUtil::GetInstance().Exec("stty -a -F " + device0Name_);
         EXPECT_NE(std::string::npos, retVal.find("-echo"));
     }
 
