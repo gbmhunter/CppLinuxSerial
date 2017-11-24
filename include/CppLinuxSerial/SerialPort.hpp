@@ -12,6 +12,7 @@
 #define SERIAL_PORT_SERIAL_PORT_H
 
 // System headers
+#include <string>
 #include <fstream> // For file I/O (reading/writing to COM port)
 #include <sstream>
 #include <termios.h> // POSIX terminal control definitions (struct termios)
@@ -24,28 +25,31 @@ namespace CppLinuxSerial
 {
 
 /// \brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
-enum class BaudRates
+enum class BaudRate
 {
 	none,
 	b9600,
 	b57600
 };
 
-//! @brief		SerialPort object is used to perform rx/tx serial communication.
+/// \brief		SerialPort object is used to perform rx/tx serial communication.
 class SerialPort
 {
 
   public:
-	//! @brief		Constructor
+	/// \brief		Default constructor.
 	SerialPort();
+
+	/// \brief		Constructor that sets up serial port with all required parameters.
+	SerialPort(const std::string& device, BaudRate baudRate);
 
 	//! @brief		Destructor
 	virtual ~SerialPort();
 
 	//! @brief		Sets the file path to use for communications. The file path must be set before Open() is called, otherwise Open() will return an error.
-	void SetFilePath(std::string filePath);
+	void SetDevice(const std::string& device);
 
-	void SetBaudRate(BaudRates baudRate);
+	void SetBaudRate(BaudRate baudRate);
 
 	//! @brief		Controls what happens when Read() is called.
 	//! @param		numOfCharToWait		Minimum number of characters to wait for before returning. Set to 0 for non-blocking mode.
@@ -61,8 +65,8 @@ class SerialPort
 	//! @note		Must call this before you can configure the COM port.
 	void Open();
 
-	//! @brief		Sets all settings for the com port to common defaults.
-	void SetEverythingToCommonDefaults();
+	/// \brief		Configures the tty device as a serial port.
+	void ConfigureDeviceAsSerialPort();
 
 	//! @brief		Closes the COM port.
 	void Close();
@@ -80,9 +84,9 @@ class SerialPort
 	void Read(std::string *str);
 
   private:
-	std::string filePath;
+	std::string device_;
 
-	BaudRates baudRate;
+	BaudRate baudRate_;
 
 	//! @brief		The file descriptor for the open file. This gets written to when Open() is called.
 	int fileDesc;

@@ -23,11 +23,13 @@ namespace mn {
 namespace CppLinuxSerial {
 
 	SerialPort::SerialPort() :
-			filePath(std::string()),
-			baudRate(BaudRates::none),
-			fileDesc(0)			
-	{
-		// Everything setup in initialiser list
+			SerialPort("", BaudRate::none)			
+	{		
+	}
+
+	SerialPort::SerialPort(const std::string& device, BaudRate baudRate) {
+		device_ = device;
+		baudRate_ = baudRate;
 	}
 
 	SerialPort::~SerialPort()
@@ -35,13 +37,12 @@ namespace CppLinuxSerial {
 
 	}
 
-	void SerialPort::SetFilePath(std::string filePath)
-	{
-		// Save a pointer to the file path
-		this->filePath = filePath;
+	void SerialPort::SetDevice(const std::string& device)
+	{		
+		device_ = device;
 	}
 
-	void SerialPort::SetBaudRate(BaudRates baudRate)
+	void SerialPort::SetBaudRate(BaudRate baudRate)
 	{
 
 		// Get current termios struct
@@ -49,15 +50,15 @@ namespace CppLinuxSerial {
 
 		switch(baudRate)
 		{
-			case BaudRates::none:
+			case BaudRate::none:
 				// Error, baud rate has not been set yet
-				throw std::runtime_error("Baud rate for '" + this->filePath + "' cannot be set to none.");
+				throw std::runtime_error("Baud rate for '" + device_ + "' cannot be set to none.");
 				break;
-			case BaudRates::b9600:
+			case BaudRate::b9600:
 				cfsetispeed(&myTermios, B9600);
 				cfsetospeed(&myTermios, B9600);
 				break;
-			case BaudRates::b57600:
+			case BaudRate::b57600:
 				cfsetispeed(&myTermios, B57600);
 				cfsetospeed(&myTermios, B57600);
 				break;
@@ -68,15 +69,15 @@ namespace CppLinuxSerial {
 
 		// Setting the baudrate must of been successful, so we can now store this
 		// new value internally. This must be done last!
-		this->baudRate = baudRate;
+		baudRate_ = baudRate;
 	}
 
 	void SerialPort::Open()
 	{
 
-		std::cout << "Attempting to open COM port \"" << this->filePath << "\"." << std::endl;
+		std::cout << "Attempting to open COM port \"" << device_ << "\"." << std::endl;
 
-		if(this->filePath.size() == 0) {
+		if(device_.size() == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << "Attempted to open file when file path has not been assigned to.");
 			//return false;
 
@@ -88,7 +89,7 @@ namespace CppLinuxSerial {
 
 		// O_RDONLY for read-only, O_WRONLY for write only, O_RDWR for both read/write access
 		// 3rd, optional parameter is mode_t mode
-		this->fileDesc = open(this->filePath.c_str(), O_RDWR);
+		this->fileDesc = open(device_.c_str(), O_RDWR);
 
 		// Check status
 		if (this->fileDesc == -1)
@@ -116,9 +117,9 @@ namespace CppLinuxSerial {
 		this->SetTermios(settings);
 	}
 
-	void SerialPort::SetEverythingToCommonDefaults()
+	void SerialPort::ConfigureDeviceAsSerialPort()
 	{
-		std::cout << "Configuring COM port \"" << this->filePath << "\"." << std::endl;
+		std::cout << "Configuring COM port \"" << device_ << "\"." << std::endl;
 
 		//================== CONFIGURE ==================//
 
@@ -137,7 +138,7 @@ namespace CppLinuxSerial {
 
 		//========================= SET UP BAUD RATES =========================//
 
-		this->SetBaudRate(BaudRates::b57600);
+		// this->SetBaudRate(BaudRate::b57600);
 
 		/*
 		switch(this->baudRate)
@@ -301,7 +302,7 @@ namespace CppLinuxSerial {
 		if(tcgetattr(this->fileDesc, &tty) != 0)
 		{
 			// Error occurred
-			std::cout << "Could not get terminal attributes for \"" << this->filePath << "\" - " << strerror(errno) << std::endl;
+			std::cout << "Could not get terminal attributes for \"" << device_ << "\" - " << strerror(errno) << std::endl;
 			throw std::system_error(EFAULT, std::system_category());
 			//return false;
 		}
@@ -317,7 +318,7 @@ namespace CppLinuxSerial {
 		if(tcsetattr(this->fileDesc, TCSANOW, &myTermios) != 0)
 		{
 			// Error occurred
-			std::cout << "Could not apply terminal attributes for \"" << this->filePath << "\" - " << strerror(errno) << std::endl;
+			std::cout << "Could not apply terminal attributes for \"" << device_ << "\" - " << strerror(errno) << std::endl;
 			throw std::system_error(EFAULT, std::system_category());
 
 		}

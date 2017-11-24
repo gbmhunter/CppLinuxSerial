@@ -6,17 +6,24 @@ using namespace mn::CppLinuxSerial;
 
 namespace {
 
-    class BasicTest : public ::testing::Test {
+    class BasicTests : public ::testing::Test {
     protected:
 
-        BasicTest() {
+        BasicTests() {
         }
 
-        virtual ~BasicTest() {
+        virtual ~BasicTests() {
         }
     };
 
-    TEST_F(BasicTest, SimplePacket) {
+    TEST_F(BasicTests, CanBeConstructed) {
+        SerialPort serialPort;
+        EXPECT_EQ(true, true);
+    }
+
+    TEST_F(BasicTests, CanOpen) {
+        SerialPort serialPort;
+        serialPort.Open();
         EXPECT_EQ(true, true);
     }
 
