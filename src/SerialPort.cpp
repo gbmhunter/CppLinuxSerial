@@ -17,10 +17,10 @@
 #include <termios.h> 	// POSIX terminal control definitions (struct termios)
 #include <system_error>	// For throwing std::system_error
 
-#include "SerialPort/SerialPort.hpp"
+#include "CppLinuxSerial/SerialPort.hpp"
 
-namespace SerialPort
-{
+namespace mn {
+namespace CppLinuxSerial {
 
 	SerialPort::SerialPort() :
 			filePath(std::string()),
@@ -325,4 +325,5 @@ namespace SerialPort
 		// Successful!
 	}
 
-} // namespace ComPort
+} // namespace CppLinuxSerial
+} // namespace mn
