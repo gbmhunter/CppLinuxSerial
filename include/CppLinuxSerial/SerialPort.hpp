@@ -22,11 +22,13 @@
 namespace mn {
     namespace CppLinuxSerial {
 
-/// \brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
+        /// \brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
         enum class BaudRate {
-            none,
-            b9600,
-            b57600
+            B_9600,
+            B_38400,
+            B_57600,
+            B_115200,
+            CUSTOM
         };
 
         enum class State {
@@ -69,7 +71,7 @@ namespace mn {
 
             /// \brief		Configures the tty device as a serial port.
             /// \warning    Device must be open (valid file descriptor) when this is called.
-            void ConfigureDeviceAsSerialPort();
+            void ConfigureTermios();
 
             //! @brief		Closes the COM port.
             void Close();

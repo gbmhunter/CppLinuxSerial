@@ -41,37 +41,13 @@ namespace CppLinuxSerial {
 	void SerialPort::SetDevice(const std::string& device)
 	{		
 		device_ = device;
-		ConfigureDeviceAsSerialPort();
+        ConfigureTermios();
 	}
 
 	void SerialPort::SetBaudRate(BaudRate baudRate)
 	{
-
-		// Get current termios struct
-		termios myTermios = this->GetTermios();
-
-		switch(baudRate)
-		{
-			case BaudRate::none:
-				// Error, baud rate has not been set yet
-				throw std::runtime_error("Baud rate for '" + device_ + "' cannot be set to none.");
-				break;
-			case BaudRate::b9600:
-				cfsetispeed(&myTermios, B9600);
-				cfsetospeed(&myTermios, B9600);
-				break;
-			case BaudRate::b57600:
-				cfsetispeed(&myTermios, B57600);
-				cfsetospeed(&myTermios, B57600);
-				break;
-		}
-
-		// Save back to file
-		this->SetTermios(myTermios);
-
-		// Setting the baudrate must of been successful, so we can now store this
-		// new value internally. This must be done last!
 		baudRate_ = baudRate;
+        ConfigureTermios();
 	}
 
 	void SerialPort::Open()
@@ -102,7 +78,7 @@ namespace CppLinuxSerial {
 		    throw std::runtime_error("Could not open device " + device_ + ". Is the device name correct and do you have read/write permission?");
 		}
 
-        ConfigureDeviceAsSerialPort();
+        ConfigureTermios();
 
 		std::cout << "COM port opened successfully." << std::endl;
 
@@ -120,45 +96,13 @@ namespace CppLinuxSerial {
 		this->SetTermios(settings);
 	}
 
-	void SerialPort::ConfigureDeviceAsSerialPort()
+	void SerialPort::ConfigureTermios()
 	{
 		std::cout << "Configuring COM port \"" << device_ << "\"." << std::endl;
 
 		//================== CONFIGURE ==================//
 
-		termios tty = this->GetTermios();
-		/*struct termios tty;
-		memset(&tty, 0, sizeof(tty));
-
-		// Get current settings (will be stored in termios structure)
-		if(tcgetattr(this->fileDesc, &tty) != 0)
-		{
-			// Error occurred
-			this->sp->PrintError(SmartPrint::Ss() << "Could not get terminal attributes for \"" << this->filePath << "\" - " << strerror(errno));
-			//return false;
-			return;
-		}*/
-
-		//========================= SET UP BAUD RATES =========================//
-
-		// this->SetBaudRate(BaudRate::b57600);
-
-		/*
-		switch(this->baudRate)
-		{
-			case BaudRates::none:
-				// Error, baud rate has not been set yet
-				this->sp->PrintError(SmartPrint::Ss() << "Baud rate for \"" << this->filePath << "\" has not been set.");
-				return;
-			case BaudRates::b9600:
-				cfsetispeed(&tty, B9600);
-				cfsetospeed(&tty, B9600);
-				break;
-			case BaudRates::b57600:
-				cfsetispeed(&tty, B57600);
-				cfsetospeed(&tty, B57600);
-				break;
-		}*/
+		termios tty = GetTermios();
 
 		//================= (.c_cflag) ===============//
 
@@ -170,6 +114,32 @@ namespace CppLinuxSerial {
 		tty.c_cflag     |=  CREAD | CLOCAL;     				// Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
 
+        //===================== BAUD RATE =================//
+
+        switch(baudRate_) {
+            case BaudRate::B_9600:
+                cfsetispeed(&tty, B9600);
+                cfsetospeed(&tty, B9600);
+                break;
+            case BaudRate::B_38400:
+                cfsetispeed(&tty, B38400);
+                cfsetospeed(&tty, B38400);
+                break;
+            case BaudRate::B_57600:
+                cfsetispeed(&tty, B57600);
+                cfsetospeed(&tty, B57600);
+                break;
+            case BaudRate::B_115200:
+                cfsetispeed(&tty, B115200);
+                cfsetospeed(&tty, B115200);
+                break;
+            case BaudRate::CUSTOM:
+                // See https://gist.github.com/kennethryerson/f7d1abcf2633b7c03cf0
+                throw std::runtime_error("Custom baud rate not yet supported.");
+            default:
+                throw std::runtime_error(std::string() + "baudRate passed to " + __PRETTY_FUNCTION__ + " unrecognized.");
+        }
+
 		//===================== (.c_oflag) =================//
 
 		tty.c_oflag     =   0;              // No remapping, no delays
@@ -180,7 +150,7 @@ namespace CppLinuxSerial {
 		// c_cc[WMIN] sets the number of characters to block (wait) for when read() is called.
 		// Set to 0 if you don't want read to block. Only meaningful when port set to non-canonical mode
 		//tty.c_cc[VMIN]      =   1;
-		this->SetNumCharsToWait(1);
+		SetNumCharsToWait(1);
 
 		// c_cc[VTIME] sets the inter-character timer, in units of 0.1s.
 		// Only meaningful when port is set to non-canonical mode
@@ -219,21 +189,19 @@ namespace CppLinuxSerial {
 		}*/
 	}
 
-	void SerialPort::SetNumCharsToWait(uint32_t numCharsToWait)
-	{
+	void SerialPort::SetNumCharsToWait(uint32_t numCharsToWait) {
 		// Get current termios struct
-		termios myTermios = this->GetTermios();
+		termios myTermios = GetTermios();
 
 		// Save the number of characters to wait for
 		// to the control register
 		myTermios.c_cc[VMIN] = numCharsToWait;
 
 		// Save termios back
-		this->SetTermios(myTermios);
+		SetTermios(myTermios);
 	}
 
-	void SerialPort::Write(const std::string& data)
-	{
+	void SerialPort::Write(const std::string& data) {
 		if(fileDesc_ == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << );
 			//return false;

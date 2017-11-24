@@ -53,16 +53,43 @@ namespace {
         EXPECT_EQ(true, true);
     }
 
+    TEST_F(BasicTests, BaudRateSetCorrectly) {
+        SerialPort serialPort0(device0_, BaudRate::B_57600);
+        serialPort0.Open();
+        auto retVal = TestUtil::Exec("stty -a -F " + device0_);
+        EXPECT_NE(std::string::npos, retVal.find("speed 57600 baud"));
+
+        serialPort0.SetBaudRate(BaudRate::B_115200);
+        retVal = TestUtil::Exec("stty -a -F " + device0_);
+        EXPECT_NE(std::string::npos, retVal.find("speed 115200 baud"));
+    }
+
     TEST_F(BasicTests, CanOpen) {
-        SerialPort serialPort0(device0_, BaudRate::b57600);
+        SerialPort serialPort0(device0_, BaudRate::B_57600);
         serialPort0.Open();
     }
 
     TEST_F(BasicTests, ReadWrite) {
-        SerialPort serialPort0(device0_, BaudRate::b57600);
+        SerialPort serialPort0(device0_, BaudRate::B_57600);
         serialPort0.Open();
 
-        SerialPort serialPort1(device1_, BaudRate::b57600);
+        SerialPort serialPort1(device1_, BaudRate::B_57600);
+        serialPort1.Open();
+
+        serialPort0.Write("Hello");
+
+        std::string readData;
+        serialPort1.Read(readData);
+
+        ASSERT_EQ("Hello", readData);
+    }
+
+
+    TEST_F(BasicTests, ReadWriteDiffBaudRates) {
+        SerialPort serialPort0(device0_, BaudRate::B_9600);
+        serialPort0.Open();
+
+        SerialPort serialPort1(device1_, BaudRate::B_57600);
         serialPort1.Open();
 
         serialPort0.Write("Hello");
