@@ -23,82 +23,6 @@
 
 using namespace std::literals;
 
-#define READ   0
-#define WRITE  1
-FILE * popen2(std::string command, std::string type, int & pid)
-{
-    pid_t child_pid;
-    int fd[2];
-    pipe(fd);
-
-    if((child_pid = fork()) == -1)
-    {
-        perror("fork");
-        exit(1);
-    }
-
-    /* child process */
-    if (child_pid == 0)
-    {
-        if (type == "r")
-        {
-            close(fd[READ]);    //Close the READ end of the pipe since the child's fd is write-only
-            dup2(fd[WRITE], 1); //Redirect stdout to pipe
-        }
-        else
-        {
-            close(fd[WRITE]);    //Close the WRITE end of the pipe since the child's fd is read-only
-            dup2(fd[READ], 0);   //Redirect stdin to pipe
-        }
-
-        setpgid(child_pid, child_pid); //Needed so negative PIDs can kill children of /bin/sh
-        execl("/bin/sh", "/bin/sh", "-c", command.c_str(), NULL);
-        exit(0);
-    }
-    else
-    {
-        if (type == "r")
-        {
-            close(fd[WRITE]); //Close the WRITE end of the pipe since parent's fd is read-only
-        }
-        else
-        {
-            close(fd[READ]); //Close the READ end of the pipe since parent's fd is write-only
-        }
-    }
-
-    pid = child_pid;
-
-    if (type == "r")
-    {
-        return fdopen(fd[READ], "r");
-    }
-
-    return fdopen(fd[WRITE], "w");
-}
-
-int pclose2(FILE * fp, pid_t pid)
-{
-    int stat;
-
-    fclose(fp);
-    while (waitpid(pid, &stat, 0) == -1)
-    {
-        if (errno != EINTR)
-        {
-            stat = -1;
-            break;
-        }
-    }
-
-    return stat;
-}
-
-struct ProcessInfo {
-    FILE* fp;
-    pid_t pid;
-};
-
 
 namespace mn {
     namespace CppLinuxSerial {
@@ -123,17 +47,6 @@ namespace mn {
                 return result;
             }
 
-            void StartProcess(const std::string &cmd) {
-                std::array<char, 128> buffer;
-                std::string result;
-                int pid;
-                FILE * fp = popen2(cmd, "r", pid);
-                ProcessInfo processInfo;
-                processInfo.fp = fp;
-                processInfo.pid = pid;
-                processes_.push_back(processInfo);
-            }
-
             void CreateVirtualSerialPortPair() {
                 std::cout << "Creating virtual serial port pair..." << std::endl;
 //                StartProcess("sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11");
@@ -144,6 +57,8 @@ namespace mn {
 //                std::cout << "Finished creating virtual serial port pair." << std::endl;
 //                std::system("./run.sh");
                 std::system("nohup sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11 &");
+                auto pid = std::system("echo $!");
+                std::cout << "pid = " << pid << std::endl;
                 std::this_thread::sleep_for(1s);
                 std::system("sudo chmod a+rw /dev/ttyS10");
                 std::system("sudo chmod a+rw /dev/ttyS11");
@@ -158,8 +73,6 @@ namespace mn {
 //                }
                 std::system("sudo pkill socat");
             }
-
-            std::vector<ProcessInfo> processes_;
 
         };
     } // namespace CppLinuxSerial

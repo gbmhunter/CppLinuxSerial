@@ -232,21 +232,19 @@ namespace CppLinuxSerial {
 		this->SetTermios(myTermios);
 	}
 
-	void SerialPort::Write(std::string* str)
+	void SerialPort::Write(const std::string& data)
 	{
-		if(this->fileDesc_ == 0)
-		{
+		if(fileDesc_ == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << );
 			//return false;
 
 			throw std::runtime_error("SendMsg called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 		}
 
-		int writeResult = write(this->fileDesc_, str->c_str(), str->size());
+		int writeResult = write(fileDesc_, data.c_str(), data.size());
 
 		// Check status
-		if (writeResult == -1)
-		{
+		if (writeResult == -1) {
 			// Could not open COM port
 			//this->sp->PrintError(SmartPrint::Ss() << "Unable to write to \"" << this->filePath << "\" - " << strerror(errno));
 			//return false;
@@ -257,10 +255,9 @@ namespace CppLinuxSerial {
 		// If code reaches here than write must of been successful
 	}
 
-	void SerialPort::Read(std::string* str)
+	void SerialPort::Read(std::string& data)
 	{
-		if(this->fileDesc_ == 0)
-		{
+		if(fileDesc_ == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 			//return false;
 			throw std::runtime_error("Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
@@ -271,25 +268,20 @@ namespace CppLinuxSerial {
 		memset (&buf, '\0', sizeof buf);
 
 		// Read from file
-		int n = read(this->fileDesc_, &buf, sizeof(buf));
+		int n = read(fileDesc_, &buf, sizeof(buf));
 
 		// Error Handling
-		if(n < 0)
-		{
-			// Could not open COM port
-			//this->sp->PrintError(SmartPrint::Ss() << "Unable to read from \"" << this->filePath << "\" - " << strerror(errno));
-			//return false;
-
+		if(n < 0) {
+			// Read was unsuccessful
 			throw std::system_error(EFAULT, std::system_category());
 		}
 
-		if(n > 0)
-		{
+		if(n > 0) {
 			//this->sp->PrintDebug(SmartPrint::Ss() << "\"" << n << "\" characters have been read from \"" << this->filePath << "\"");
 			// Characters have been read
 			buf[n] = '\0';
 			//printf("%s\r\n", buf);
-			str->append(buf);
+			data.append(buf);
 			//std::cout << *str << " and size of string =" << str->size() << "\r\n";
 		}
 

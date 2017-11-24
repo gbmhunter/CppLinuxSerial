@@ -65,6 +65,12 @@ namespace {
         SerialPort serialPort1(device1_, BaudRate::b57600);
         serialPort1.Open();
 
+        serialPort0.Write("Hello");
+
+        std::string readData;
+        serialPort1.Read(readData);
+
+        ASSERT_EQ("Hello", readData);
     }
 
 }  // namespace

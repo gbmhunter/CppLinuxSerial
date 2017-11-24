@@ -78,13 +78,13 @@ namespace mn {
             //! @param		str		Reference to an string containing the characters to write to the COM port.
             //! @throws		{std::runtime_error} if filename has not been set.
             //!				{std::system_error} if system write() operation fails.
-            void Write(std::string *str);
+            void Write(const std::string& data);
 
             //! @brief		Use to read from the COM port.
             //! @param		str		Reference to a string that the read characters from the COM port will be saved to.
             //! @throws		{std::runtime_error} if filename has not been set.
             //!				{std::system_error} if system read() operation fails.
-            void Read(std::string *str);
+            void Read(std::string& data);
 
         private:
 

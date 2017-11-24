@@ -19,7 +19,7 @@ file(GLOB_RECURSE CppLinuxSerialUnitTests_SRC
 
 
 
-add_executable(CppLinuxSerialUnitTests ${CppLinuxSerialUnitTests_SRC} "run.sh")
+add_executable(CppLinuxSerialUnitTests ${CppLinuxSerialUnitTests_SRC})
 
 target_link_libraries(CppLinuxSerialUnitTests LINK_PUBLIC CppLinuxSerial ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
 
@@ -33,9 +33,3 @@ add_custom_target(
 add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/CppLinuxSerialUnitTests.touch
         COMMAND ${CMAKE_CURRENT_BINARY_DIR}/CppLinuxSerialUnitTests)
-
-add_custom_command(TARGET CppLinuxSerialUnitTests POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different
-        ${CMAKE_CURRENT_SOURCE_DIR}/run.sh
-        $<TARGET_FILE_DIR:CppLinuxSerialUnitTests>
-        )
