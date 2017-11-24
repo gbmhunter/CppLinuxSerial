@@ -1,11 +1,11 @@
-//!
-//! @file 			SerialPort.hpp
-//! @author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
-//! @created		2014/01/07
-//! @last-modified 	2014/05/21
-//! @brief			The main serial port class.
-//! @details
-//!					See README.rst in repo root dir for more info.
+///
+/// \file 			SerialPort.hpp
+/// \author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
+/// \created		2014-01-07
+/// \last-modified 	2017-11-23
+/// \brief			The main serial port class.
+/// \details
+///					See README.rst in repo root dir for more info.
 
 // Header guard
 #ifndef SERIAL_PORT_SERIAL_PORT_H
@@ -17,14 +17,13 @@
 #include <termios.h> 	// POSIX terminal control definitions (struct termios)
 
 // User headers
-#include "lib/SmartPrint/include/Sp.hpp"
 
+namespace mn {
 namespace SerialPort
 {
 
-	//! @brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
-	enum class BaudRates
-	{
+	/// \brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
+	enum class BaudRates {
 		none,
 		b9600,
 		b57600
@@ -88,9 +87,6 @@ namespace SerialPort
 		//! @brief		The file descriptor for the open file. This gets written to when Open() is called.
 		int fileDesc;
 
-		//! @brief Object for printing debug and error messages with
-		SmartPrint::Sp* sp;
-
 		//! @brief		Returns a populated termios structure for the passed in file descriptor.
 		termios GetTermios();
 
@@ -99,5 +95,6 @@ namespace SerialPort
 	};
 
 } // namespace SerialPort
+} // namespace mn
 
 #endif // #ifndef SERIAL_PORT_SERIAL_PORT_H

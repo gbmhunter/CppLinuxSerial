@@ -1,6 +1,6 @@
-==============================================================
-serial-port-cpp
-==============================================================
+==============
+CppLinuxSerial
+==============
 
 ----------------------------------
 Serial port library written in C++
@@ -8,20 +8,6 @@ Serial port library written in C++
 
 .. image:: https://api.travis-ci.org/gbmhunter/serial-port-cpp.png?branch=master   
 	:target: https://travis-ci.org/gbmhunter/serial-port-cpp
-
-- Author: gbmhunter <gbmhunter@gmail.com> (http://www.cladlab.com)
-- Created: 2014/01/07
-- Last Modified: 2014/05/21
-- Version: v1.0.1.0
-- Company: CladLabs
-- Project: Free Code Libraries
-- Language: C++
-- Compiler: GCC	
-- uC Model: n/a
-- Computer Architecture: n/a
-- Operating System: n/a
-- Documentation Format: Doxygen
-- License: GPLv3
 
 .. role:: bash(code)
 	:language: bash

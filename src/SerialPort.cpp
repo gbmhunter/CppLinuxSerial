@@ -1,8 +1,8 @@
 //!
 //! @file 			SerialPort.cpp
 //! @author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
-//! @created		2014/01/07
-//! @last-modified 	2014/05/21
+//! @created		2014-01-07
+//! @last-modified 	2017-11-23
 //! @brief			The main serial port class.
 //! @details
 //!					See README.rst in repo root dir for more info.
@@ -17,9 +17,7 @@
 #include <termios.h> 	// POSIX terminal control definitions (struct termios)
 #include <system_error>	// For throwing std::system_error
 
-#include "../include/Config.hpp"
-#include "../include/SerialPort.hpp"
-#include "lib/SmartPrint/api/SmartPrint.hpp"
+#include "SerialPort/SerialPort.hpp"
 
 namespace SerialPort
 {
@@ -27,16 +25,7 @@ namespace SerialPort
 	SerialPort::SerialPort() :
 			filePath(std::string()),
 			baudRate(BaudRates::none),
-			fileDesc(0),
-			sp(
-				new SmartPrint::Sp(
-					"Port",
-					&std::cout,
-					&SmartPrint::Colours::yellow,
-					&std::cout,
-					&SmartPrint::Colours::yellow,
-					&std::cerr,
-					&SmartPrint::Colours::red))
+			fileDesc(0)			
 	{
 		// Everything setup in initialiser list
 	}
@@ -85,10 +74,9 @@ namespace SerialPort
 	void SerialPort::Open()
 	{
 
-		this->sp->PrintDebug(SmartPrint::Ss() << "Attempting to open COM port \"" << this->filePath << "\".");
+		std::cout << "Attempting to open COM port \"" << this->filePath << "\"." << std::endl;
 
-		if(this->filePath.size() == 0)
-		{
+		if(this->filePath.size() == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << "Attempted to open file when file path has not been assigned to.");
 			//return false;
 
@@ -112,7 +100,7 @@ namespace SerialPort
 		    throw std::system_error(EFAULT, std::system_category());
 		}
 
-		this->sp->PrintDebug(SmartPrint::Ss() << "COM port opened successfully.");
+		std::cout << "COM port opened successfully." << std::endl;
 
 		// If code reaches here, open and config must of been successful
 
@@ -130,7 +118,7 @@ namespace SerialPort
 
 	void SerialPort::SetEverythingToCommonDefaults()
 	{
-		this->sp->PrintDebug(SmartPrint::Ss() << "Configuring COM port \"" << this->filePath << "\".");
+		std::cout << "Configuring COM port \"" << this->filePath << "\"." << std::endl;
 
 		//================== CONFIGURE ==================//
 
@@ -313,7 +301,7 @@ namespace SerialPort
 		if(tcgetattr(this->fileDesc, &tty) != 0)
 		{
 			// Error occurred
-			this->sp->PrintError(SmartPrint::Ss() << "Could not get terminal attributes for \"" << this->filePath << "\" - " << strerror(errno));
+			std::cout << "Could not get terminal attributes for \"" << this->filePath << "\" - " << strerror(errno) << std::endl;
 			throw std::system_error(EFAULT, std::system_category());
 			//return false;
 		}
@@ -329,7 +317,7 @@ namespace SerialPort
 		if(tcsetattr(this->fileDesc, TCSANOW, &myTermios) != 0)
 		{
 			// Error occurred
-			this->sp->PrintError(SmartPrint::Ss() << "Could not apply terminal attributes for \"" << this->filePath << "\" - " << strerror(errno));
+			std::cout << "Could not apply terminal attributes for \"" << this->filePath << "\" - " << strerror(errno) << std::endl;
 			throw std::system_error(EFAULT, std::system_category());
 
 		}
