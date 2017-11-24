@@ -31,7 +31,6 @@ namespace {
 
         std::string device0Name_ = TestUtil::GetInstance().GetDevice0Name();
         std::string device1Name_ = TestUtil::GetInstance().GetDevice1Name();
-
     };
 
     TEST_F(BasicTests, CanBeConstructed) {
