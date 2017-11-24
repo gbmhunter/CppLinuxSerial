@@ -136,19 +136,27 @@ namespace mn {
 
             void CreateVirtualSerialPortPair() {
                 std::cout << "Creating virtual serial port pair..." << std::endl;
-                StartProcess("sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11");
+//                StartProcess("sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11");
+//                std::this_thread::sleep_for(1s);
+//                StartProcess("sudo chmod a+rw /dev/ttyS10");
+//                StartProcess("sudo chmod a+rw /dev/ttyS11");
+//                std::this_thread::sleep_for(1s);
+//                std::cout << "Finished creating virtual serial port pair." << std::endl;
+//                std::system("./run.sh");
+                std::system("nohup sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11 &");
                 std::this_thread::sleep_for(1s);
-                StartProcess("sudo chmod a+rw /dev/ttyS10");
-                StartProcess("sudo chmod a+rw /dev/ttyS11");
-                std::this_thread::sleep_for(1s);
-                std::cout << "Finished creating virtual serial port pair." << std::endl;
+                std::system("sudo chmod a+rw /dev/ttyS10");
+                std::system("sudo chmod a+rw /dev/ttyS11");
             }
 
             void CloseSerialPorts() {
-                for(const auto& filePointer : processes_) {
-                    kill(filePointer.pid, SIGKILL);
-                    pclose2(filePointer.fp, filePointer.pid);
-                }
+//                for(const auto& filePointer : processes_) {
+//                    std::cout << "Sending SIGINT..." << std::endl;
+//                    kill(filePointer.pid, SIGINT);
+//                    std::cout << "Calling pclose2()..." << std::endl;
+//                    pclose2(filePointer.fp, filePointer.pid);
+//                }
+                std::system("sudo pkill socat");
             }
 
             std::vector<ProcessInfo> processes_;
