@@ -1,6 +1,6 @@
 //!
 //! @file 			SerialPort.cpp
-//! @author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
+//! @author 		Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
 //! @created		2014-01-07
 //! @last-modified 	2017-11-23
 //! @brief			The main serial port class.
@@ -22,9 +22,7 @@
 namespace mn {
 namespace CppLinuxSerial {
 
-	SerialPort::SerialPort() :
-			SerialPort("", BaudRate::none)			
-	{		
+	SerialPort::SerialPort() {
 	}
 
 	SerialPort::SerialPort(const std::string& device, BaudRate baudRate) {
@@ -32,14 +30,18 @@ namespace CppLinuxSerial {
 		baudRate_ = baudRate;
 	}
 
-	SerialPort::~SerialPort()
-	{
-
+	SerialPort::~SerialPort() {
+        try {
+            Close();
+        } catch(...) {
+            // We can't do anything about this!
+        }
 	}
 
 	void SerialPort::SetDevice(const std::string& device)
 	{		
 		device_ = device;
+		ConfigureDeviceAsSerialPort();
 	}
 
 	void SerialPort::SetBaudRate(BaudRate baudRate)
@@ -89,17 +91,18 @@ namespace CppLinuxSerial {
 
 		// O_RDONLY for read-only, O_WRONLY for write only, O_RDWR for both read/write access
 		// 3rd, optional parameter is mode_t mode
-		this->fileDesc = open(device_.c_str(), O_RDWR);
+		fileDesc_ = open(device_.c_str(), O_RDWR);
 
 		// Check status
-		if (this->fileDesc == -1)
-		{
+		if(fileDesc_ == -1) {
 			// Could not open COM port
 		    //this->sp->PrintError(SmartPrint::Ss() << "Unable to open " << this->filePath << " - " << strerror(errno));
 		    //return false;
 
-		    throw std::system_error(EFAULT, std::system_category());
+		    throw std::runtime_error("Could not open device " + device_ + ". Is the device name correct and do you have read/write permission?");
 		}
+
+        ConfigureDeviceAsSerialPort();
 
 		std::cout << "COM port opened successfully." << std::endl;
 
@@ -231,7 +234,7 @@ namespace CppLinuxSerial {
 
 	void SerialPort::Write(std::string* str)
 	{
-		if(this->fileDesc == 0)
+		if(this->fileDesc_ == 0)
 		{
 			//this->sp->PrintError(SmartPrint::Ss() << );
 			//return false;
@@ -239,7 +242,7 @@ namespace CppLinuxSerial {
 			throw std::runtime_error("SendMsg called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 		}
 
-		int writeResult = write(this->fileDesc, str->c_str(), str->size());
+		int writeResult = write(this->fileDesc_, str->c_str(), str->size());
 
 		// Check status
 		if (writeResult == -1)
@@ -256,7 +259,7 @@ namespace CppLinuxSerial {
 
 	void SerialPort::Read(std::string* str)
 	{
-		if(this->fileDesc == 0)
+		if(this->fileDesc_ == 0)
 		{
 			//this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 			//return false;
@@ -268,7 +271,7 @@ namespace CppLinuxSerial {
 		memset (&buf, '\0', sizeof buf);
 
 		// Read from file
-		int n = read(this->fileDesc, &buf, sizeof(buf));
+		int n = read(this->fileDesc_, &buf, sizeof(buf));
 
 		// Error Handling
 		if(n < 0)
@@ -295,11 +298,14 @@ namespace CppLinuxSerial {
 
 	termios SerialPort::GetTermios()
 	{
+        if(fileDesc_ == -1)
+            throw std::runtime_error("GetTermios() called but file descriptor was not valid.");
+
 		struct termios tty;
 		memset(&tty, 0, sizeof(tty));
 
 		// Get current settings (will be stored in termios structure)
-		if(tcgetattr(this->fileDesc, &tty) != 0)
+		if(tcgetattr(fileDesc_, &tty) != 0)
 		{
 			// Error occurred
 			std::cout << "Could not get terminal attributes for \"" << device_ << "\" - " << strerror(errno) << std::endl;
@@ -313,9 +319,9 @@ namespace CppLinuxSerial {
 	void SerialPort::SetTermios(termios myTermios)
 	{
 		// Flush port, then apply attributes
-		tcflush(this->fileDesc, TCIFLUSH);
+		tcflush(this->fileDesc_, TCIFLUSH);
 
-		if(tcsetattr(this->fileDesc, TCSANOW, &myTermios) != 0)
+		if(tcsetattr(this->fileDesc_, TCSANOW, &myTermios) != 0)
 		{
 			// Error occurred
 			std::cout << "Could not apply terminal attributes for \"" << device_ << "\" - " << strerror(errno) << std::endl;
@@ -325,6 +331,18 @@ namespace CppLinuxSerial {
 
 		// Successful!
 	}
+
+    void SerialPort::Close() {
+        if(fileDesc_ != -1) {
+            auto retVal = close(fileDesc_);
+            if(retVal != 0)
+                throw std::runtime_error("Tried to close serial port " + device_ + ", but close() failed.");
+
+            fileDesc_ = -1;
+        }
+
+        state_ = State::CLOSED;
+    }
 
 } // namespace CppLinuxSerial
 } // namespace mn
