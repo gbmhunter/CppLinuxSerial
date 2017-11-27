@@ -43,6 +43,10 @@ namespace {
         EXPECT_NE(std::string::npos, sttyOutput_.find("speed 115200 baud"));
     }
 
+    //================================================================================================//
+    //======================================= LOCAL MODES (c_lflag) ==================================//
+    //================================================================================================//
+
     TEST_F(ConfigTests, CanonicalModeOff) {
         EXPECT_NE(std::string::npos, sttyOutput_.find("-icanon"));
     }
@@ -51,6 +55,10 @@ namespace {
         EXPECT_NE(std::string::npos, sttyOutput_.find("-echo"));
         EXPECT_NE(std::string::npos, sttyOutput_.find("-echoe"));
         EXPECT_NE(std::string::npos, sttyOutput_.find("-echonl"));
+    }
+
+    TEST_F(ConfigTests, InterruptQuitSuspCharsOff) {
+        EXPECT_NE(std::string::npos, sttyOutput_.find("-isig"));
     }
 
 }  // namespace

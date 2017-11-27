@@ -7,11 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
-- CMake build support.
-- Unit tests using gtest.
+- Added CMake build support.
+- Added basic, config and read/write unit tests using gtest.
 
 ### Changed
 - Updated serial port to use C++14.
+- Changed library name from serial-port to CppLinuxSerial.
+- Updated Doxygen comments.
 
 ## [v1.0.1] - 2014-05-21
  
