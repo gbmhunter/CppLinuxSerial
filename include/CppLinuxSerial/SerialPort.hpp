@@ -16,6 +16,7 @@
 #include <fstream> // For file I/O (reading/writing to COM port)
 #include <sstream>
 #include <termios.h> // POSIX terminal control definitions (struct termios)
+#include <vector>
 
 // User headers
 
@@ -67,10 +68,9 @@ namespace mn {
             /// \param		value		Pass in true to enable echo, false to disable echo.
             void SetEcho(bool value);
 
-            //! @brief		Opens the COM port for use.
-            //! @throws		{std::runtime_error} if filename has not been set.
-            //!				{std::system_error} if system open() operation fails.
-            //! @note		Must call this before you can configure the COM port.
+            /// \brief		Opens the COM port for use.
+            /// \throws		CppLinuxSerial::Exception if device cannot be opened.
+            /// \note		Must call this before you can configure the COM port.
             void Open();
 
             /// \brief		Closes the COM port.
@@ -89,6 +89,9 @@ namespace mn {
             void Read(std::string& data);
 
         private:
+
+            /// \brief		Returns a populated termios structure for the passed in file descriptor.
+            termios GetTermios();
 
             /// \brief		Configures the tty device as a serial port.
             /// \warning    Device must be open (valid file descriptor) when this is called.
@@ -112,11 +115,12 @@ namespace mn {
 
             int32_t timeout_ms_;
 
-            /// \brief		Returns a populated termios structure for the passed in file descriptor.
-            termios GetTermios();
+            std::vector<char> readBuffer_;
+            unsigned char readBufferSize_B_;
 
             static constexpr BaudRate defaultBaudRate_ = BaudRate::B_57600;
             static constexpr int32_t defaultTimeout_ms_ = -1;
+            static constexpr unsigned char defaultReadBufferSize_B_ = 255;
 
 
         };

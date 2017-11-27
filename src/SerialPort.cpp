@@ -29,6 +29,8 @@ namespace CppLinuxSerial {
         echo_ = false;
         timeout_ms_ = defaultTimeout_ms_;
         baudRate_ = defaultBaudRate_;
+        readBufferSize_B_ = defaultReadBufferSize_B_;
+        readBuffer_.reserve(readBufferSize_B_);
 	}
 
 	SerialPort::SerialPort(const std::string& device, BaudRate baudRate) :
@@ -65,10 +67,7 @@ namespace CppLinuxSerial {
 
 		std::cout << "Attempting to open COM port \"" << device_ << "\"." << std::endl;
 
-		if(device_.size() == 0) {
-			//this->sp->PrintError(SmartPrint::Ss() << "Attempted to open file when file path has not been assigned to.");
-			//return false;
-
+		if(device_.empty()) {
 			THROW_EXCEPT("Attempted to open file when file path has not been assigned to.");
 		}
 
@@ -81,10 +80,6 @@ namespace CppLinuxSerial {
 
 		// Check status
 		if(fileDesc_ == -1) {
-			// Could not open COM port
-		    //this->sp->PrintError(SmartPrint::Ss() << "Unable to open " << this->filePath << " - " << strerror(errno));
-		    //return false;
-
 		    THROW_EXCEPT("Could not open device " + device_ + ". Is the device name correct and do you have read/write permission?");
 		}
 
@@ -230,6 +225,8 @@ namespace CppLinuxSerial {
 
 	void SerialPort::Read(std::string& data)
 	{
+        data.clear();
+
 		if(fileDesc_ == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 			//return false;
@@ -237,11 +234,14 @@ namespace CppLinuxSerial {
 		}
 
 		// Allocate memory for read buffer
-		char buf [256];
-		memset (&buf, '\0', sizeof buf);
+//		char buf [256];
+//		memset (&buf, '\0', sizeof buf);
 
 		// Read from file
-		ssize_t n = read(fileDesc_, &buf, sizeof(buf));
+        // We provide the underlying raw array from the readBuffer_ vector to this C api.
+        // This will work because we do not delete/resize the vector while this method
+        // is called
+		ssize_t n = read(fileDesc_, &readBuffer_[0], readBufferSize_B_);
 
 		// Error Handling
 		if(n < 0) {
@@ -250,11 +250,11 @@ namespace CppLinuxSerial {
 		}
 
 		if(n > 0) {
-			//this->sp->PrintDebug(SmartPrint::Ss() << "\"" << n << "\" characters have been read from \"" << this->filePath << "\"");
-			// Characters have been read
-			buf[n] = '\0';
+
+//			buf[n] = '\0';
 			//printf("%s\r\n", buf);
-			data.append(buf);
+//			data.append(buf);
+            data = std::string(&readBuffer_[0], n);
 			//std::cout << *str << " and size of string =" << str->size() << "\r\n";
 		}
 

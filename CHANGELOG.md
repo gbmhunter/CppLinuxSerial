@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added CMake build support.
 - Added basic, config and read/write unit tests using gtest.
+- Improved read() performance due to removal of buffer creation on every call.
+- TravisCI configuration file.
+- Build script under `tools/`.
 
 ### Changed
 - Updated serial port to use C++14.
