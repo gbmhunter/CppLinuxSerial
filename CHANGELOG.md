@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.0.0]
+
 ### Added
 - Added CMake build support.
 - Added basic, config and read/write unit tests using gtest.
@@ -28,5 +30,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Initial commit. serial-port-cpp library has basic functions up and running.
 
-[Unreleased]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v1.0.1...HEAD
-[1.0.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v1.0.1...v1.0.0
+[Unreleased]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.0...HEAD
+[v2.0.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.0...v1.0.1
+[v1.0.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v1.0.1...v1.0.0
