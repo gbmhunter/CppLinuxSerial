@@ -10,8 +10,8 @@
 
 enable_testing()
 find_package (Threads)
-find_package(GTest REQUIRED)
-message("gtest libraries found at ${GTEST_BOTH_LIBRARIES}")
+#find_package(GTest REQUIRED)
+#message("gtest libraries found at ${GTEST_BOTH_LIBRARIES}")
 
 file(GLOB_RECURSE CppLinuxSerialUnitTests_SRC
         "*.cpp"
@@ -21,7 +21,7 @@ file(GLOB_RECURSE CppLinuxSerialUnitTests_SRC
 
 add_executable(CppLinuxSerialUnitTests ${CppLinuxSerialUnitTests_SRC})
 
-target_link_libraries(CppLinuxSerialUnitTests LINK_PUBLIC CppLinuxSerial ${GTEST_BOTH_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(CppLinuxSerialUnitTests LINK_PUBLIC CppLinuxSerial gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 # The custom target and custom command below allow the unit tests
 # to be run.
