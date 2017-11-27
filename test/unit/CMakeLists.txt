@@ -21,6 +21,12 @@ file(GLOB_RECURSE CppLinuxSerialUnitTests_SRC
 
 add_executable(CppLinuxSerialUnitTests ${CppLinuxSerialUnitTests_SRC})
 
+if(COVERAGE)
+    message("Coverage enabled.")
+    target_compile_options(CppLinuxSerialUnitTests PRIVATE --coverage)
+    target_link_libraries(CppLinuxSerialUnitTests PRIVATE --coverage)
+endif()
+
 target_link_libraries(CppLinuxSerialUnitTests LINK_PUBLIC CppLinuxSerial gtest_main ${CMAKE_THREAD_LIBS_INIT})
 
 # The custom target and custom command below allow the unit tests

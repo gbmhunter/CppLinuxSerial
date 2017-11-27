@@ -27,6 +27,7 @@ set +e
 
 # Define the command-line arguments
 DEFINE_boolean 'install' 'false' 'Do you want to [i]nstall the CppLinuxSerial header files onto your local system after build?' 'i'
+DEFINE_boolean 'coverage' 'false' 'Do you want to record test [c]overage metrics?' 'c'
 
 # parse the command-line
 FLAGS "$@" || exit 1
@@ -37,6 +38,7 @@ eval set -- "${FLAGS_ARGV}"
 set -e
 
 printInfo "install = ${FLAGS_install}"
+printInfo "coverage = ${FLAGS_coverage}"
 
 BUILD_DIRECTORY_NAME="build"
 
@@ -47,8 +49,13 @@ printInfo "Making and/or changing into build directory (${script_dir}/../${BUILD
 mkdir -p ${script_dir}/../${BUILD_DIRECTORY_NAME}/
 cd ${script_dir}/../${BUILD_DIRECTORY_NAME}/
 
-printInfo 'Invoking cmake...'
-cmake ..
+if [[ "$FLAGS_coverage" == $FLAGS_TRUE ]]; then
+    printInfo 'Invoking cmake with -DCOVERAGE=1...'
+    cmake -DCOVERAGE=1 ..
+else
+    printInfo 'Invoking cmake without -DCOVERAGE=1...'
+    cmake ..
+fi
 
 printInfo 'Invoking make...'
 make -j8
