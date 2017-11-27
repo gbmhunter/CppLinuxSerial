@@ -1,12 +1,13 @@
 //!
 //! @file 			SerialPort.cpp
-//! @author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
-//! @created		2014/01/07
-//! @last-modified 	2014/05/21
+//! @author 		Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
+//! @created		2014-01-07
+//! @last-modified 	2017-11-27
 //! @brief			The main serial port class.
 //! @details
 //!					See README.rst in repo root dir for more info.
 
+// System includes
 #include <iostream>
 #include <sstream>
 #include <stdio.h>   	// Standard input/output definitions
@@ -17,82 +18,57 @@
 #include <termios.h> 	// POSIX terminal control definitions (struct termios)
 #include <system_error>	// For throwing std::system_error
 
-#include "../include/Config.hpp"
-#include "../include/SerialPort.hpp"
-#include "lib/SmartPrint/api/SmartPrint.hpp"
+// User includes
+#include "CppLinuxSerial/Exception.hpp"
+#include "CppLinuxSerial/SerialPort.hpp"
 
-namespace SerialPort
-{
+namespace mn {
+namespace CppLinuxSerial {
 
-	SerialPort::SerialPort() :
-			filePath(std::string()),
-			baudRate(BaudRates::none),
-			fileDesc(0),
-			sp(
-				new SmartPrint::Sp(
-					"Port",
-					&std::cout,
-					&SmartPrint::Colours::yellow,
-					&std::cout,
-					&SmartPrint::Colours::yellow,
-					&std::cerr,
-					&SmartPrint::Colours::red))
-	{
-		// Everything setup in initialiser list
+	SerialPort::SerialPort() {
+        echo_ = false;
+        timeout_ms_ = defaultTimeout_ms_;
+        baudRate_ = defaultBaudRate_;
+        readBufferSize_B_ = defaultReadBufferSize_B_;
+        readBuffer_.reserve(readBufferSize_B_);
 	}
 
-	SerialPort::~SerialPort()
-	{
-
+	SerialPort::SerialPort(const std::string& device, BaudRate baudRate) :
+            SerialPort() {
+		device_ = device;
+        baudRate_ = baudRate;
 	}
 
-	void SerialPort::SetFilePath(std::string filePath)
-	{
-		// Save a pointer to the file path
-		this->filePath = filePath;
+	SerialPort::~SerialPort() {
+        try {
+            Close();
+        } catch(...) {
+            // We can't do anything about this!
+            // But we don't want to throw within destructor, so swallow
+        }
 	}
 
-	void SerialPort::SetBaudRate(BaudRates baudRate)
-	{
+	void SerialPort::SetDevice(const std::string& device) {
+		device_ = device;
+        if(state_ == State::OPEN)
 
-		// Get current termios struct
-		termios myTermios = this->GetTermios();
 
-		switch(baudRate)
-		{
-			case BaudRates::none:
-				// Error, baud rate has not been set yet
-				throw std::runtime_error("Baud rate for '" + this->filePath + "' cannot be set to none.");
-				break;
-			case BaudRates::b9600:
-				cfsetispeed(&myTermios, B9600);
-				cfsetospeed(&myTermios, B9600);
-				break;
-			case BaudRates::b57600:
-				cfsetispeed(&myTermios, B57600);
-				cfsetospeed(&myTermios, B57600);
-				break;
-		}
+        ConfigureTermios();
+	}
 
-		// Save back to file
-		this->SetTermios(myTermios);
-
-		// Setting the baudrate must of been successful, so we can now store this
-		// new value internally. This must be done last!
-		this->baudRate = baudRate;
+	void SerialPort::SetBaudRate(BaudRate baudRate)	{
+		baudRate_ = baudRate;
+        if(state_ == State::OPEN)
+            ConfigureTermios();
 	}
 
 	void SerialPort::Open()
 	{
 
-		this->sp->PrintDebug(SmartPrint::Ss() << "Attempting to open COM port \"" << this->filePath << "\".");
+		std::cout << "Attempting to open COM port \"" << device_ << "\"." << std::endl;
 
-		if(this->filePath.size() == 0)
-		{
-			//this->sp->PrintError(SmartPrint::Ss() << "Attempted to open file when file path has not been assigned to.");
-			//return false;
-
-			throw std::runtime_error("Attempted to open file when file path has not been assigned to.");
+		if(device_.empty()) {
+			THROW_EXCEPT("Attempted to open file when file path has not been assigned to.");
 		}
 
 		// Attempt to open file
@@ -100,73 +76,31 @@ namespace SerialPort
 
 		// O_RDONLY for read-only, O_WRONLY for write only, O_RDWR for both read/write access
 		// 3rd, optional parameter is mode_t mode
-		this->fileDesc = open(this->filePath.c_str(), O_RDWR);
+		fileDesc_ = open(device_.c_str(), O_RDWR);
 
 		// Check status
-		if (this->fileDesc == -1)
-		{
-			// Could not open COM port
-		    //this->sp->PrintError(SmartPrint::Ss() << "Unable to open " << this->filePath << " - " << strerror(errno));
-		    //return false;
-
-		    throw std::system_error(EFAULT, std::system_category());
+		if(fileDesc_ == -1) {
+		    THROW_EXCEPT("Could not open device " + device_ + ". Is the device name correct and do you have read/write permission?");
 		}
 
-		this->sp->PrintDebug(SmartPrint::Ss() << "COM port opened successfully.");
+        ConfigureTermios();
 
-		// If code reaches here, open and config must of been successful
-
+		std::cout << "COM port opened successfully." << std::endl;
+        state_ = State::OPEN;
 	}
 
-	void SerialPort::EnableEcho(bool echoOn)
-	{
-		termios settings = this->GetTermios();
-		settings.c_lflag = echoOn
-					   ? (settings.c_lflag |   ECHO )
-					   : (settings.c_lflag & ~(ECHO));
-		//tcsetattr( STDIN_FILENO, TCSANOW, &settings );
-		this->SetTermios(settings);
+	void SerialPort::SetEcho(bool value) {
+        echo_ = value;
+        ConfigureTermios();
 	}
 
-	void SerialPort::SetEverythingToCommonDefaults()
+	void SerialPort::ConfigureTermios()
 	{
-		this->sp->PrintDebug(SmartPrint::Ss() << "Configuring COM port \"" << this->filePath << "\".");
+		std::cout << "Configuring COM port \"" << device_ << "\"." << std::endl;
 
 		//================== CONFIGURE ==================//
 
-		termios tty = this->GetTermios();
-		/*struct termios tty;
-		memset(&tty, 0, sizeof(tty));
-
-		// Get current settings (will be stored in termios structure)
-		if(tcgetattr(this->fileDesc, &tty) != 0)
-		{
-			// Error occurred
-			this->sp->PrintError(SmartPrint::Ss() << "Could not get terminal attributes for \"" << this->filePath << "\" - " << strerror(errno));
-			//return false;
-			return;
-		}*/
-
-		//========================= SET UP BAUD RATES =========================//
-
-		this->SetBaudRate(BaudRates::b57600);
-
-		/*
-		switch(this->baudRate)
-		{
-			case BaudRates::none:
-				// Error, baud rate has not been set yet
-				this->sp->PrintError(SmartPrint::Ss() << "Baud rate for \"" << this->filePath << "\" has not been set.");
-				return;
-			case BaudRates::b9600:
-				cfsetispeed(&tty, B9600);
-				cfsetospeed(&tty, B9600);
-				break;
-			case BaudRates::b57600:
-				cfsetispeed(&tty, B57600);
-				cfsetospeed(&tty, B57600);
-				break;
-		}*/
+		termios tty = GetTermios();
 
 		//================= (.c_cflag) ===============//
 
@@ -178,6 +112,32 @@ namespace SerialPort
 		tty.c_cflag     |=  CREAD | CLOCAL;     				// Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
 
+        //===================== BAUD RATE =================//
+
+        switch(baudRate_) {
+            case BaudRate::B_9600:
+                cfsetispeed(&tty, B9600);
+                cfsetospeed(&tty, B9600);
+                break;
+            case BaudRate::B_38400:
+                cfsetispeed(&tty, B38400);
+                cfsetospeed(&tty, B38400);
+                break;
+            case BaudRate::B_57600:
+                cfsetispeed(&tty, B57600);
+                cfsetospeed(&tty, B57600);
+                break;
+            case BaudRate::B_115200:
+                cfsetispeed(&tty, B115200);
+                cfsetospeed(&tty, B115200);
+                break;
+            case BaudRate::CUSTOM:
+                // See https://gist.github.com/kennethryerson/f7d1abcf2633b7c03cf0
+                throw std::runtime_error("Custom baud rate not yet supported.");
+            default:
+                throw std::runtime_error(std::string() + "baudRate passed to " + __PRETTY_FUNCTION__ + " unrecognized.");
+        }
+
 		//===================== (.c_oflag) =================//
 
 		tty.c_oflag     =   0;              // No remapping, no delays
@@ -185,14 +145,29 @@ namespace SerialPort
 
 		//================= CONTROL CHARACTERS (.c_cc[]) ==================//
 
-		// c_cc[WMIN] sets the number of characters to block (wait) for when read() is called.
-		// Set to 0 if you don't want read to block. Only meaningful when port set to non-canonical mode
-		//tty.c_cc[VMIN]      =   1;
-		this->SetNumCharsToWait(1);
-
 		// c_cc[VTIME] sets the inter-character timer, in units of 0.1s.
 		// Only meaningful when port is set to non-canonical mode
-		tty.c_cc[VTIME]     =   5;          // 0.5 seconds read timeout
+        // VMIN = 0, VTIME = 0: No blocking, return immediately with what is available
+        // VMIN > 0, VTIME = 0: read() waits for VMIN bytes, could block indefinitely
+        // VMIN = 0, VTIME > 0: Block until any amount of data is available, OR timeout occurs
+        // VMIN > 0, VTIME > 0: Block until either VMIN characters have been received, or VTIME
+        //                      after first character has elapsed
+        // c_cc[WMIN] sets the number of characters to block (wait) for when read() is called.
+        // Set to 0 if you don't want read to block. Only meaningful when port set to non-canonical mode
+
+        if(timeout_ms_ == -1) {
+            // Always wait for at least one byte, this could
+            // block indefinitely
+            tty.c_cc[VTIME] = 0;
+            tty.c_cc[VMIN] = 1;
+        } else if(timeout_ms_ == 0) {
+            // Setting both to 0 will give a non-blocking read
+            tty.c_cc[VTIME] = 0;
+            tty.c_cc[VMIN] = 0;
+        } else if(timeout_ms_ > 0) {
+            tty.c_cc[VTIME] = (cc_t)(timeout_ms_/100);    // 0.5 seconds read timeout
+            tty.c_cc[VMIN] = 0;
+        }
 
 
 		//======================== (.c_iflag) ====================//
@@ -200,15 +175,19 @@ namespace SerialPort
 		tty.c_iflag     &= ~(IXON | IXOFF | IXANY);			// Turn off s/w flow ctrl
 		tty.c_iflag 	&= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
 
+
+
 		//=========================== LOCAL MODES (c_lflag) =======================//
 
 		// Canonical input is when read waits for EOL or EOF characters before returning. In non-canonical mode, the rate at which
 		// read() returns is instead controlled by c_cc[VMIN] and c_cc[VTIME]
 		tty.c_lflag		&= ~ICANON;								// Turn off canonical input, which is suitable for pass-through
-		tty.c_lflag		&= ~ECHO;								// Turn off echo
+        echo_ ? (tty.c_lflag | ECHO ) : (tty.c_lflag & ~(ECHO));	// Configure echo depending on echo_ boolean
 		tty.c_lflag		&= ~ECHOE;								// Turn off echo erase (echo erase only relevant if canonical input is active)
 		tty.c_lflag		&= ~ECHONL;								//
 		tty.c_lflag		&= ~ISIG;								// Disables recognition of INTR (interrupt), QUIT and SUSP (suspend) characters
+
+
 
 		// Try and use raw function call
 		//cfmakeraw(&tty);
@@ -227,93 +206,73 @@ namespace SerialPort
 		}*/
 	}
 
-	void SerialPort::SetNumCharsToWait(uint32_t numCharsToWait)
-	{
-		// Get current termios struct
-		termios myTermios = this->GetTermios();
+	void SerialPort::Write(const std::string& data) {
 
-		// Save the number of characters to wait for
-		// to the control register
-		myTermios.c_cc[VMIN] = numCharsToWait;
+        if(state_ != State::OPEN)
+            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
 
-		// Save termios back
-		this->SetTermios(myTermios);
-	}
-
-	void SerialPort::Write(std::string* str)
-	{
-		if(this->fileDesc == 0)
-		{
-			//this->sp->PrintError(SmartPrint::Ss() << );
-			//return false;
-
-			throw std::runtime_error("SendMsg called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
+		if(fileDesc_ < 0) {
+			THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but file descriptor < 0, indicating file has not been opened.");
 		}
 
-		int writeResult = write(this->fileDesc, str->c_str(), str->size());
+		int writeResult = write(fileDesc_, data.c_str(), data.size());
 
 		// Check status
-		if (writeResult == -1)
-		{
-			// Could not open COM port
-			//this->sp->PrintError(SmartPrint::Ss() << "Unable to write to \"" << this->filePath << "\" - " << strerror(errno));
-			//return false;
-
+		if (writeResult == -1) {
 			throw std::system_error(EFAULT, std::system_category());
 		}
-
-		// If code reaches here than write must of been successful
 	}
 
-	void SerialPort::Read(std::string* str)
+	void SerialPort::Read(std::string& data)
 	{
-		if(this->fileDesc == 0)
-		{
+        data.clear();
+
+		if(fileDesc_ == 0) {
 			//this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 			//return false;
-			throw std::runtime_error("Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
+			THROW_EXCEPT("Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
 		}
 
 		// Allocate memory for read buffer
-		char buf [256];
-		memset (&buf, '\0', sizeof buf);
+//		char buf [256];
+//		memset (&buf, '\0', sizeof buf);
 
 		// Read from file
-		int n = read(this->fileDesc, &buf, sizeof(buf));
+        // We provide the underlying raw array from the readBuffer_ vector to this C api.
+        // This will work because we do not delete/resize the vector while this method
+        // is called
+		ssize_t n = read(fileDesc_, &readBuffer_[0], readBufferSize_B_);
 
 		// Error Handling
-		if(n < 0)
-		{
-			// Could not open COM port
-			//this->sp->PrintError(SmartPrint::Ss() << "Unable to read from \"" << this->filePath << "\" - " << strerror(errno));
-			//return false;
-
+		if(n < 0) {
+			// Read was unsuccessful
 			throw std::system_error(EFAULT, std::system_category());
 		}
 
-		if(n > 0)
-		{
-			//this->sp->PrintDebug(SmartPrint::Ss() << "\"" << n << "\" characters have been read from \"" << this->filePath << "\"");
-			// Characters have been read
-			buf[n] = '\0';
+		if(n > 0) {
+
+//			buf[n] = '\0';
 			//printf("%s\r\n", buf);
-			str->append(buf);
+//			data.append(buf);
+            data = std::string(&readBuffer_[0], n);
 			//std::cout << *str << " and size of string =" << str->size() << "\r\n";
 		}
 
 		// If code reaches here, read must of been successful
 	}
 
-	termios SerialPort::GetTermios()
-	{
+	termios SerialPort::GetTermios() {
+        if(fileDesc_ == -1)
+            throw std::runtime_error("GetTermios() called but file descriptor was not valid.");
+
 		struct termios tty;
 		memset(&tty, 0, sizeof(tty));
 
 		// Get current settings (will be stored in termios structure)
-		if(tcgetattr(this->fileDesc, &tty) != 0)
+		if(tcgetattr(fileDesc_, &tty) != 0)
 		{
 			// Error occurred
-			this->sp->PrintError(SmartPrint::Ss() << "Could not get terminal attributes for \"" << this->filePath << "\" - " << strerror(errno));
+			std::cout << "Could not get terminal attributes for \"" << device_ << "\" - " << strerror(errno) << std::endl;
 			throw std::system_error(EFAULT, std::system_category());
 			//return false;
 		}
@@ -324,12 +283,12 @@ namespace SerialPort
 	void SerialPort::SetTermios(termios myTermios)
 	{
 		// Flush port, then apply attributes
-		tcflush(this->fileDesc, TCIFLUSH);
+		tcflush(fileDesc_, TCIFLUSH);
 
-		if(tcsetattr(this->fileDesc, TCSANOW, &myTermios) != 0)
+		if(tcsetattr(fileDesc_, TCSANOW, &myTermios) != 0)
 		{
 			// Error occurred
-			this->sp->PrintError(SmartPrint::Ss() << "Could not apply terminal attributes for \"" << this->filePath << "\" - " << strerror(errno));
+			std::cout << "Could not apply terminal attributes for \"" << device_ << "\" - " << strerror(errno) << std::endl;
 			throw std::system_error(EFAULT, std::system_category());
 
 		}
@@ -337,4 +296,27 @@ namespace SerialPort
 		// Successful!
 	}
 
-} // namespace ComPort
+    void SerialPort::Close() {
+        if(fileDesc_ != -1) {
+            auto retVal = close(fileDesc_);
+            if(retVal != 0)
+                THROW_EXCEPT("Tried to close serial port " + device_ + ", but close() failed.");
+
+            fileDesc_ = -1;
+        }
+
+        state_ = State::CLOSED;
+    }
+
+    void SerialPort::SetTimeout(int32_t timeout_ms) {
+        if(timeout_ms < -1)
+            THROW_EXCEPT(std::string() + "timeout_ms provided to " + __PRETTY_FUNCTION__ + " was < -1, which is invalid.");
+        if(timeout_ms > 25500)
+            THROW_EXCEPT(std::string() + "timeout_ms provided to " + __PRETTY_FUNCTION__ + " was > 25500, which is invalid.");
+        if(state_ == State::OPEN)
+            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called while state == OPEN.");
+        timeout_ms_ = timeout_ms;
+    }
+
+} // namespace CppLinuxSerial
+} // namespace mn
