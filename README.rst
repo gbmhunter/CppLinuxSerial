@@ -6,8 +6,8 @@ CppLinuxSerial
 Serial port library written in C++
 ----------------------------------
 
-.. image:: https://travis-ci.org/mbedded-ninja/CppLinuxSerial.svg?branch=master
-	:target: https://travis-ci.org/mbedded-ninja/CppLinuxSerial
+.. image:: https://travis-ci.org/gbmhunter/CppLinuxSerial.svg?branch=master
+	:target: https://travis-ci.org/gbmhunter/CppLinuxSerial
 
 .. role:: bash(code)
 	:language: bash

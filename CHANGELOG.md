@@ -6,12 +6,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [v2.0.1]
+## [v2.0.1] - 2017-11-27
 
 ### Fixed
 - Fixed link to TravisCI image in README.
 
-## [v2.0.0]
+## [v2.0.0] - 2017-11-27
 
 ### Added
 - Added CMake build support.
