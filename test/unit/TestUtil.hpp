@@ -55,13 +55,15 @@ namespace mn {
 
             void CreateVirtualSerialPortPair() {
                 std::cout << "Creating virtual serial port pair..." << std::endl;
-                std::system("nohup sudo socat -d -d pty,raw,echo=0,link=/dev/ttyS10 pty,raw,echo=0,link=/dev/ttyS11 &");
+                std::system((std::string("nohup sudo socat -d -d pty,raw,echo=0,link=") 
+                    + device0Name_ + " pty,raw,echo=0,link="
+                    + device1Name_ + " &").c_str());
 
                 // Hacky! Since socat is detached, we have no idea at what point it has created
                 // ttyS10 and ttyS11. Assume 1 second is long enough...
                 std::this_thread::sleep_for(1s);
-                std::system("sudo chmod a+rw /dev/ttyS10");
-                std::system("sudo chmod a+rw /dev/ttyS11");
+                std::system((std::string("sudo chmod a+rw ") + GetDevice0Name()).c_str());
+                std::system((std::string("sudo chmod a+rw ") + GetDevice1Name()).c_str());
             }
 
             void CloseSerialPorts() {
@@ -78,8 +80,8 @@ namespace mn {
                 return device1Name_;
             }
 
-            std::string device0Name_ = "/dev/ttyS10";
-            std::string device1Name_ = "/dev/ttyS11";
+            std::string device0Name_ = "/dev/ttyS31";
+            std::string device1Name_ = "/dev/ttyS32";
 
         protected:
 
