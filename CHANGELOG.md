@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Sphinx documentation.
+- Unit tests for testing `SetTimeout()`.
 
 ## [v2.0.1] - 2017-11-27
 

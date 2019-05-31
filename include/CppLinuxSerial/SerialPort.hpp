@@ -1,8 +1,8 @@
 ///
 /// \file 			SerialPort.hpp
-/// \author 		Geoffrey Hunter <gbmhunter@gmail.com> ()
+/// \author 		Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
 /// \created		2014-01-07
-/// \last-modified 	2017-11-23
+/// \last-modified 	2019-05-30
 /// \brief			The main serial port class.
 /// \details
 ///					See README.rst in repo root dir for more info.
@@ -19,6 +19,7 @@
 #include <vector>
 
 // User headers
+#include "Exception.hpp"
 
 namespace mn {
     namespace CppLinuxSerial {
