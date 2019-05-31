@@ -31,6 +31,7 @@ namespace CppLinuxSerial {
         baudRate_ = defaultBaudRate_;
         readBufferSize_B_ = defaultReadBufferSize_B_;
         readBuffer_.reserve(readBufferSize_B_);
+		state_ = State::CLOSED;
 	}
 
 	SerialPort::SerialPort(const std::string& device, BaudRate baudRate) :
