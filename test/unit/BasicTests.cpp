@@ -2,7 +2,7 @@
 /// \file 			BasicTests.cpp
 /// \author 		Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
 /// \created		2017-11-24
-/// \last-modified 	2017-11-24
+/// \last-modified 	2019-05-30
 /// \brief			Basic tests for the SerialPort class.
 /// \details
 ///					See README.rst in repo root dir for more info.
@@ -58,7 +58,6 @@ namespace {
         ASSERT_EQ("Hello", readData);
     }
 
-
     TEST_F(BasicTests, ReadWriteDiffBaudRates) {
         SerialPort serialPort0(device0Name_, BaudRate::B_9600);
         serialPort0.Open();
@@ -72,6 +71,28 @@ namespace {
         serialPort1.Read(readData);
 
         ASSERT_EQ("Hello", readData);
+    }
+
+    TEST_F(BasicTests, SetTimeoutCorrectly) {
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
+        serialPort0.SetTimeout(-1); // Infinite timeout
+        serialPort0.Open();
+
+        SerialPort serialPort1(device1Name_, BaudRate::B_57600);
+        serialPort1.Open();
+
+        serialPort0.Write("Hello");
+
+        std::string readData;
+        serialPort1.Read(readData);
+
+        ASSERT_EQ("Hello", readData);
+    }
+
+    TEST_F(BasicTests, SetTimeoutIncorrectly) {
+        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
+        serialPort0.Open();
+        EXPECT_THROW(serialPort0.SetTimeout(-1), mn::CppLinuxSerial::Exception);
     }
 
 }  // namespace

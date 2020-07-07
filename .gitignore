@@ -1,4 +1,7 @@
 build/
 cmake-build-debug/
 .idea/workspace.xml
-.vscode/c_cpp_properties.json
+.vscode/
+
+# Sphinx build dir
+docs/_build/
