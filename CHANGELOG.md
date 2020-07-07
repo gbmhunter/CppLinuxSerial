@@ -7,12 +7,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.0.2] - 2020-07-07
+
 ### Added
 - Sphinx documentation.
 - Unit tests for testing `SetTimeout()`.
 
 ### Fixed
 - Serial port state is set to `CLOSED` on initialization.
+- Fixed build commands in README.
 
 ## [v2.0.1] - 2017-11-27
 
