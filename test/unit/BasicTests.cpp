@@ -29,8 +29,8 @@ namespace {
         virtual ~BasicTests() {
         }
 
-        std::string device0Name_ = TestUtil::GetInstance().GetDevice0Name();
-        std::string device1Name_ = TestUtil::GetInstance().GetDevice1Name();
+        // std::string device0Name_ = TestUtil::GetInstance().GetDevice0Name();
+        // std::string device1Name_ = TestUtil::GetInstance().GetDevice1Name();
     };
 
     TEST_F(BasicTests, CanBeConstructed) {
@@ -38,61 +38,61 @@ namespace {
         EXPECT_EQ(true, true);
     }
 
-    TEST_F(BasicTests, CanOpen) {
-        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
-        serialPort0.Open();
-    }
+    // TEST_F(BasicTests, CanOpen) {
+    //     SerialPort serialPort0(device0Name_, BaudRate::B_57600);
+    //     serialPort0.Open();
+    // }
 
-    TEST_F(BasicTests, ReadWrite) {
-        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
-        serialPort0.Open();
+    // TEST_F(BasicTests, ReadWrite) {
+    //     SerialPort serialPort0(device0Name_, BaudRate::B_57600);
+    //     serialPort0.Open();
 
-        SerialPort serialPort1(device1Name_, BaudRate::B_57600);
-        serialPort1.Open();
+    //     SerialPort serialPort1(device1Name_, BaudRate::B_57600);
+    //     serialPort1.Open();
 
-        serialPort0.Write("Hello");
+    //     serialPort0.Write("Hello");
 
-        std::string readData;
-        serialPort1.Read(readData);
+    //     std::string readData;
+    //     serialPort1.Read(readData);
 
-        ASSERT_EQ("Hello", readData);
-    }
+    //     ASSERT_EQ("Hello", readData);
+    // }
 
-    TEST_F(BasicTests, ReadWriteDiffBaudRates) {
-        SerialPort serialPort0(device0Name_, BaudRate::B_9600);
-        serialPort0.Open();
+    // TEST_F(BasicTests, ReadWriteDiffBaudRates) {
+    //     SerialPort serialPort0(device0Name_, BaudRate::B_9600);
+    //     serialPort0.Open();
 
-        SerialPort serialPort1(device1Name_, BaudRate::B_57600);
-        serialPort1.Open();
+    //     SerialPort serialPort1(device1Name_, BaudRate::B_57600);
+    //     serialPort1.Open();
 
-        serialPort0.Write("Hello");
+    //     serialPort0.Write("Hello");
 
-        std::string readData;
-        serialPort1.Read(readData);
+    //     std::string readData;
+    //     serialPort1.Read(readData);
 
-        ASSERT_EQ("Hello", readData);
-    }
+    //     ASSERT_EQ("Hello", readData);
+    // }
 
-    TEST_F(BasicTests, SetTimeoutCorrectly) {
-        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
-        serialPort0.SetTimeout(-1); // Infinite timeout
-        serialPort0.Open();
+    // TEST_F(BasicTests, SetTimeoutCorrectly) {
+    //     SerialPort serialPort0(device0Name_, BaudRate::B_57600);
+    //     serialPort0.SetTimeout(-1); // Infinite timeout
+    //     serialPort0.Open();
 
-        SerialPort serialPort1(device1Name_, BaudRate::B_57600);
-        serialPort1.Open();
+    //     SerialPort serialPort1(device1Name_, BaudRate::B_57600);
+    //     serialPort1.Open();
 
-        serialPort0.Write("Hello");
+    //     serialPort0.Write("Hello");
 
-        std::string readData;
-        serialPort1.Read(readData);
+    //     std::string readData;
+    //     serialPort1.Read(readData);
 
-        ASSERT_EQ("Hello", readData);
-    }
+    //     ASSERT_EQ("Hello", readData);
+    // }
 
-    TEST_F(BasicTests, SetTimeoutIncorrectly) {
-        SerialPort serialPort0(device0Name_, BaudRate::B_57600);
-        serialPort0.Open();
-        EXPECT_THROW(serialPort0.SetTimeout(-1), mn::CppLinuxSerial::Exception);
-    }
+    // TEST_F(BasicTests, SetTimeoutIncorrectly) {
+    //     SerialPort serialPort0(device0Name_, BaudRate::B_57600);
+    //     serialPort0.Open();
+    //     EXPECT_THROW(serialPort0.SetTimeout(-1), mn::CppLinuxSerial::Exception);
+    // }
 
 }  // namespace
