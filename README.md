@@ -57,6 +57,37 @@ Uses fstream to the file I/O.
 
 	If you get errors such as `Could not open device /dev/ttyS10. Is the device name correct and do you have read/write permission?" thrown in the test fixture's constructor.`, it is probably an issue with either creating the virtual serial ports or permissions to access them.
 
+## Examples
+
+```c++
+#include <CppLinuxSerial/SerialPort.hpp>
+
+using namespace mn::CppLinuxSerial;
+
+int main() {
+	// Create serial port object and open serial port
+	SerialPort serialPort0("/dev/ttyUSB0", BaudRate::B_57600);
+	serialPort0.Open();
+
+	// Write some ASCII datae
+	serialPort0.Write("Hello");
+
+	// Read some data back
+	std::string readData;
+	serialPort0.Read(readData);
+
+	// Close the serial port
+	serialPort0.Close();
+}
+```
+
+If the above code was in a file called `main.cpp` and you had installed `CppLinuxSerial` following the instructions above, on a Linux system you should be able to compile the example application with:
+
+```bash
+g++ main.cpp -lCppLinuxSerial
+```
+
+For more examples, see the `.cpp` files in `test/unit/`.
 
 ## Dependencies
 

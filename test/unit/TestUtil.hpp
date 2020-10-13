@@ -20,8 +20,7 @@
 
 // 3rd party includes
 
-
-using namespace std::literals;
+using namespace std::literals::chrono_literals;
 
 
 namespace mn {

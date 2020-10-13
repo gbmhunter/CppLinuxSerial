@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.0.3] - 2020-10-13
+
+### Added
+- Added example of how to use the library to the README.
+
+### Fixed
+- Fixed CMake not using C++14 by specifying `set(CMAKE_CXX_STANDARD 14)` rather than just `add_definitions(-std=c++14)`.
+
+### Removed
+- Removed all unit tests that were using virtual serial ports for testing, as these are broken due to a changing TravisCI OS environment. This needs fixing at a later date.
+
 ## [v2.0.2] - 2020-07-07
 
 ### Added
