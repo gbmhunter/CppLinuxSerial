@@ -66,18 +66,19 @@ using namespace mn::CppLinuxSerial;
 
 int main() {
 	// Create serial port object and open serial port
-	SerialPort serialPort0("/dev/ttyUSB0", BaudRate::B_57600);
-	serialPort0.Open();
+	SerialPort serialPort("/dev/ttyUSB0", BaudRate::B_57600);
+	serialPort.SetTimeout(-1); // Block when reading until any data is received
+	serialPort.Open();
 
 	// Write some ASCII datae
-	serialPort0.Write("Hello");
+	serialPort.Write("Hello");
 
 	// Read some data back
 	std::string readData;
-	serialPort0.Read(readData);
+	serialPort.Read(readData);
 
 	// Close the serial port
-	serialPort0.Close();
+	serialPort.Close();
 }
 ```
 
