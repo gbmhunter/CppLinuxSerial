@@ -24,22 +24,11 @@
 // User headers
 #include "Exception.hpp"
 
-
- typedef unsigned int speed_t;
-// typedef struct termios2 {
-// 	tcflag_t c_iflag;		/* input mode flags */
-// 	tcflag_t c_oflag;		/* output mode flags */
-// 	tcflag_t c_cflag;		/* control mode flags */
-// 	tcflag_t c_lflag;		/* local mode flags */
-// 	cc_t c_line;			/* line discipline */
-// 	cc_t c_cc[NCCS];		/* control characters */
-// 	speed_t c_ispeed;		/* input speed */
-// 	speed_t c_ospeed;		/* output speed */
-// } termios2_t;
-
 namespace mn {
     namespace CppLinuxSerial {
 
+        /// \brief      Represents the baud rate "types" that can be used with the serial port. STANDARD represents all
+        ///             the standard baud rates as provided by UNIX, CUSTOM represents a baud rate defined by an arbitray integer.
         enum class BaudRateType {
             STANDARD,
             CUSTOM,
@@ -72,6 +61,7 @@ namespace mn {
             B_CUSTOM, // Placeholder 
         };
 
+        /// \brief      Represents the state of the serial port.
         enum class State {
             CLOSED,
             OPEN,
@@ -90,13 +80,14 @@ namespace mn {
             /// \brief		Constructor that sets up serial port with the basic (required) parameters.
             SerialPort(const std::string &device, speed_t baudRate);
 
-            //! @brief		Destructor. Closes serial port if still open.
+            /// \brief		Destructor. Closes serial port if still open.
             virtual ~SerialPort();
 
             /// \brief		Sets the device to use for serial port communications.
             /// \details    Method can be called when serial port is in any state.
             void SetDevice(const std::string &device);
 
+            /// \brief      Allows the user to set a standard baud rate.
             void SetBaudRate(BaudRate baudRate);
 
             /// \brief      Allows the user to set a custom baud rate.
@@ -139,15 +130,16 @@ namespace mn {
             /// \brief		Returns a populated termios structure for the passed in file descriptor.
             // termios GetTermios();
 
-
-
             /// \brief		Configures the tty device as a serial port.
             /// \warning    Device must be open (valid file descriptor) when this is called.
             void ConfigureTermios();
 
             // void SetTermios(termios myTermios);
 
+            /// \brief		Returns a populated termios2 structure for the serial port pointed to by the file descriptor.
             termios2 GetTermios2();
+
+            /// \brief      Assigns the provided tty settings to the serial port pointed to by the file descriptor.
             void SetTermios2(termios2 tty);
 
             /// \brief      Keeps track of the serial port's state.

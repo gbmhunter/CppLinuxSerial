@@ -1,6 +1,6 @@
 # CppLinuxSerial
 
-Serial port library written in C++
+Linux serial port library written in C++.
 
 [![Build Status](https://travis-ci.org/gbmhunter/CppLinuxSerial.svg?branch=master)](https://travis-ci.org/gbmhunter/CppLinuxSerial)
 
@@ -8,7 +8,9 @@ Serial port library written in C++
 
 Library for communicating with COM ports on a Linux system.
 
-Uses fstream to the file I/O.
+* Simple API
+* Supports custom baud rates
+* cmake based build system
 
 ## Installation
 
@@ -67,13 +69,14 @@ using namespace mn::CppLinuxSerial;
 int main() {
 	// Create serial port object and open serial port
 	SerialPort serialPort("/dev/ttyUSB0", BaudRate::B_57600);
+	// Use SerialPort serialPort("/dev/ttyACM0", 13000); instead if you want to provide a custom baud rate
 	serialPort.SetTimeout(-1); // Block when reading until any data is received
 	serialPort.Open();
 
 	// Write some ASCII datae
 	serialPort.Write("Hello");
 
-	// Read some data back
+	// Read some data back (will block until at least 1 byte is received due to the SetTimeout(-1) call above)
 	std::string readData;
 	serialPort.Read(readData);
 
@@ -88,34 +91,7 @@ If the above code was in a file called `main.cpp` and you had installed `CppLinu
 g++ main.cpp -lCppLinuxSerial
 ```
 
-For more examples, see the `.cpp` files in `test/unit/`.
-
-## Dependencies
-
-The following table lists all of the libraries dependencies.
-
-<table>
-	<thead>
-		<tr>
-			<td>Dependency</td>
-			<td>Comments</td>
-		</tr>
-	</thead>
-	<tbody>
-		<tr>
-			<td>C++14</td>
-			<td>C++14 used for strongly typed enums, `std::chrono` and literals.</td>
-		</tr>
-		<tr>
-			<td>stdio.h</td>
-			<td>snprintf()</td>
-		</tr>
-		<tr>
-			<td>stty</td>
-			<td>Used in unit tests to verify the serial port is configured correctly.</td>
-		</tr>
-	</tbody>
-</table>
+For more examples, see the files in `test/`.
 
 ## Issues
 
@@ -123,7 +99,7 @@ See GitHub Issues.
 	
 ## FAQ
 
-1. My code stalls when calling functions like `SerialPort::Read()`. This is probably because the library is set up to do a blocking read, and not enough characters have been received to allow `SerialPort::Read()` to return. Use `SerialPort::SetNumCharsToWait()` to determine how many characters to wait for before returning (set to 0 for non-blocking mode).
+1. My code stalls when calling functions like `SerialPort::Read()`. This is probably because the library is set up to do a blocking read, and not enough characters have been received to allow `SerialPort::Read()` to return. Call `SerialPort::SetTimeout(0)` before the serial port is open to set a non-blocking mode.
 
 ## Changelog
 

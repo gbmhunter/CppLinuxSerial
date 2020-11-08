@@ -140,103 +140,140 @@ namespace CppLinuxSerial {
 
         //===================== BAUD RATE =================//
 
-		// We used to use cfsetispeed() cand cfsetospeed(), but this didn't allow
-		// us to set custom baud rates
+		// We used to use cfsetispeed() and cfsetospeed() with the B... macros, but this didn't allow
+		// us to set custom baud rates. So now to support both standard and custom baud rates lets
+		// just make everything "custom". This giant switch statement could be replaced with a map/lookup
+		// in the future
 		if (baudRateType_ == BaudRateType::STANDARD) {
+			tty.c_cflag &= ~CBAUD;
+			tty.c_cflag |= CBAUDEX;
 			switch(baudRateStandard_) {
-				// case BaudRate::B_0:
+				case BaudRate::B_0:
 					// cfsetispeed(&tty, B0);
 					// cfsetospeed(&tty, B0);
-				// 	tty.c_ispeed = 0;
-				// 	tty.c_ospeed = 0;
-				// 	break;
-				// case BaudRate::B_50:
+					tty.c_ispeed = 0;
+					tty.c_ospeed = 0;
+					break;
+				case BaudRate::B_50:
 					// cfsetispeed(&tty, B50);
 					// cfsetospeed(&tty, B50);
-					// tty.c_ispeed = 50;
-					// tty.c_ospeed = 50;
-					// break;
-				// case BaudRate::B_75:
-				//     cfsetispeed(&tty, B75);
-				//     cfsetospeed(&tty, B75);
-				//     break;
-				// case BaudRate::B_110:
-				//     cfsetispeed(&tty, B110);
-				//     cfsetospeed(&tty, B110);
-				//     break;
-				// case BaudRate::B_134:
-				//     cfsetispeed(&tty, B134);
-				//     cfsetospeed(&tty, B134);
-				//     break;
-				// case BaudRate::B_150:
-				//     cfsetispeed(&tty, B150);
-				//     cfsetospeed(&tty, B150);
-				//     break;
-				// case BaudRate::B_200:
-				//     cfsetispeed(&tty, B200);
-				//     cfsetospeed(&tty, B200);
-				//     break;
-				// case BaudRate::B_300:
-				//     cfsetispeed(&tty, B300);
-				//     cfsetospeed(&tty, B300);
-				//     break;
-				// case BaudRate::B_600:
-				//     cfsetispeed(&tty, B600);
-				//     cfsetospeed(&tty, B600);
-				//     break;
-				// case BaudRate::B_1200:
-				//     cfsetispeed(&tty, B1200);
-				//     cfsetospeed(&tty, B1200);
-				//     break;
-				// case BaudRate::B_1800:
-				//     cfsetispeed(&tty, B1800);
-				//     cfsetospeed(&tty, B1800);
-				//     break;
-				// case BaudRate::B_2400:
-				//     cfsetispeed(&tty, B2400);
-				//     cfsetospeed(&tty, B2400);
-				//     break;
-				// case BaudRate::B_4800:
-				//     cfsetispeed(&tty, B4800);
-				//     cfsetospeed(&tty, B4800);
-				//     break;
-				// case BaudRate::B_9600:
+					tty.c_ispeed = 50;
+					tty.c_ospeed = 50;
+					break;
+				case BaudRate::B_75:
+				    // cfsetispeed(&tty, B75);
+				    // cfsetospeed(&tty, B75);
+					tty.c_ispeed = 75;
+					tty.c_ospeed = 75;
+				    break;
+				case BaudRate::B_110:
+				    // cfsetispeed(&tty, B110);
+				    // cfsetospeed(&tty, B110);
+					tty.c_ispeed = 110;
+					tty.c_ospeed = 110;
+				    break;
+				case BaudRate::B_134:
+				    // cfsetispeed(&tty, B134);
+				    // cfsetospeed(&tty, B134);
+					tty.c_ispeed = 134;
+					tty.c_ospeed = 134;
+				    break;
+				case BaudRate::B_150:
+				    // cfsetispeed(&tty, B150);
+				    // cfsetospeed(&tty, B150);
+					tty.c_ispeed = 150;
+					tty.c_ospeed = 150;
+				    break;
+				case BaudRate::B_200:
+				    // cfsetispeed(&tty, B200);
+				    // cfsetospeed(&tty, B200);
+					tty.c_ispeed = 200;
+					tty.c_ospeed = 200;
+				    break;
+				case BaudRate::B_300:
+				    // cfsetispeed(&tty, B300);
+				    // cfsetospeed(&tty, B300);
+					tty.c_ispeed = 300;
+					tty.c_ospeed = 300;
+				    break;
+				case BaudRate::B_600:
+				    // cfsetispeed(&tty, B600);
+				    // cfsetospeed(&tty, B600);
+					tty.c_ispeed = 600;
+					tty.c_ospeed = 600;
+				    break;
+				case BaudRate::B_1200:
+				    // cfsetispeed(&tty, B1200);
+				    // cfsetospeed(&tty, B1200);
+					tty.c_ispeed = 1200;
+					tty.c_ospeed = 1200;
+				    break;
+				case BaudRate::B_1800:
+				    // cfsetispeed(&tty, B1800);
+				    // cfsetospeed(&tty, B1800);
+					tty.c_ispeed = 1800;
+					tty.c_ospeed = 1800;
+				    break;
+				case BaudRate::B_2400:
+				    // cfsetispeed(&tty, B2400);
+				    // cfsetospeed(&tty, B2400);
+					tty.c_ispeed = 2400;
+					tty.c_ospeed = 2400;
+				    break;
+				case BaudRate::B_4800:
+				    // cfsetispeed(&tty, B4800);
+				    // cfsetospeed(&tty, B4800);
+					tty.c_ispeed = 4800;
+					tty.c_ospeed = 4800;
+				    break;
+				case BaudRate::B_9600:
 					// cfsetispeed(&tty, B9600);
 					// cfsetospeed(&tty, B9600);
-					// tty.c_ispeed = 9600;
-					// tty.c_ospeed = 9600;
-					// break;
-				// case BaudRate::B_19200:
-				//     cfsetispeed(&tty, B19200);
-				//     cfsetospeed(&tty, B19200);
-				//     break;
-				// case BaudRate::B_38400:
-				//     cfsetispeed(&tty, B38400);
-				//     cfsetospeed(&tty, B38400);
-				//     break;
-				// case BaudRate::B_57600:
-				//     cfsetispeed(&tty, B57600);
-				//     cfsetospeed(&tty, B57600);
-				//     break;
-				// case BaudRate::B_115200:
-				//     cfsetispeed(&tty, B115200);
-				//     cfsetospeed(&tty, B115200);
-				//     break;
-				// case BaudRate::B_230400:
-				//     cfsetispeed(&tty, B230400);
-				//     cfsetospeed(&tty, B230400);
-				//     break;
-				// case BaudRate::B_460800:
-				//     cfsetispeed(&tty, B460800);
-				//     cfsetospeed(&tty, B460800);
-				//     break;
-				// case BaudRate::CUSTOM:
-				//     // See https://gist.github.com/kennethryerson/f7d1abcf2633b7c03cf0
-				//     throw std::runtime_error("Custom baud rate not yet supported.");
+					tty.c_ispeed = 9600;
+					tty.c_ospeed = 9600;
+					break;
+				case BaudRate::B_19200:
+				    // cfsetispeed(&tty, B19200);
+				    // cfsetospeed(&tty, B19200);
+					tty.c_ispeed = 19200;
+					tty.c_ospeed = 19200;
+				    break;
+				case BaudRate::B_38400:
+				    // cfsetispeed(&tty, B38400);
+				    // cfsetospeed(&tty, B38400);
+					tty.c_ispeed = 38400;
+					tty.c_ospeed = 38400;
+				    break;
+				case BaudRate::B_57600:
+				    // cfsetispeed(&tty, B57600);
+				    // cfsetospeed(&tty, B57600);
+					tty.c_ispeed = 57600;
+					tty.c_ospeed = 57600;
+				    break;
+				case BaudRate::B_115200:
+				    // cfsetispeed(&tty, B115200);
+				    // cfsetospeed(&tty, B115200);
+					tty.c_ispeed = 115200;
+					tty.c_ospeed = 115200;
+				    break;
+				case BaudRate::B_230400:
+				    // cfsetispeed(&tty, B230400);
+				    // cfsetospeed(&tty, B230400);
+					tty.c_ispeed = 230400;
+					tty.c_ospeed = 230400;
+				    break;
+				case BaudRate::B_460800:
+				    // cfsetispeed(&tty, B460800);
+				    // cfsetospeed(&tty, B460800);
+					tty.c_ispeed = 460800;
+					tty.c_ospeed = 460800;
+				    break;
 				default:
 					throw std::runtime_error(std::string() + "baudRate passed to " + __PRETTY_FUNCTION__ + " unrecognized.");
 			}
 		}
+		// This does no different than STANDARD atm, but let's keep
+		// them separate for now....
 		else if (baudRateType_ == BaudRateType::CUSTOM)
 		{ 
 			tty.c_cflag &= ~CBAUD;
@@ -300,13 +337,10 @@ namespace CppLinuxSerial {
             tty.c_cc[VMIN] = 0;
         }
 
-
 		//======================== (.c_iflag) ====================//
 
 		tty.c_iflag     &= ~(IXON | IXOFF | IXANY);			// Turn off s/w flow ctrl
 		tty.c_iflag 	&= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
-
-
 
 		//=========================== LOCAL MODES (c_lflag) =======================//
 
@@ -317,7 +351,6 @@ namespace CppLinuxSerial {
 		tty.c_lflag		&= ~ECHOE;								// Turn off echo erase (echo erase only relevant if canonical input is active)
 		tty.c_lflag		&= ~ECHONL;								//
 		tty.c_lflag		&= ~ISIG;								// Disables recognition of INTR (interrupt), QUIT and SUSP (suspend) characters
-
 
 
 		// Try and use raw function call
