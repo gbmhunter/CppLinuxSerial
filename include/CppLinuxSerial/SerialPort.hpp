@@ -15,8 +15,11 @@
 #include <string>
 #include <fstream> // For file I/O (reading/writing to COM port)
 #include <sstream>
-#include <termios.h> // POSIX terminal control definitions (struct termios)
+// #include <termios.h> // POSIX terminal control definitions (struct termios)
+// #include <asm/termios.h> // Terminal control definitions (struct termios)
 #include <vector>
+#include <asm/ioctls.h>
+#include <asm/termbits.h>
 
 // User headers
 #include "Exception.hpp"
@@ -24,18 +27,44 @@
 namespace mn {
     namespace CppLinuxSerial {
 
+        /// \brief      Represents the baud rate "types" that can be used with the serial port. STANDARD represents all
+        ///             the standard baud rates as provided by UNIX, CUSTOM represents a baud rate defined by an arbitray integer.
+        enum class BaudRateType {
+            STANDARD,
+            CUSTOM,
+        };
+
         /// \brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
+        /// \details    Specifies all the same baud rates as UNIX, as well as B_CUSTOM to specify your
+        ///             own. See https://linux.die.net/man/3/cfsetispeed for list of supported UNIX baud rates.
         enum class BaudRate {
+            B_0,
+            B_50,
+            B_75,
+            B_110,
+            B_134,
+            B_150,
+            B_200,
+            B_300,
+            B_600,
+            B_1200,
+            B_1800,
+            B_2400,
+            B_4800,
             B_9600,
+            B_19200,
             B_38400,
             B_57600,
             B_115200,
-            CUSTOM
+            B_230400,
+            B_460800,
+            B_CUSTOM, // Placeholder 
         };
 
+        /// \brief      Represents the state of the serial port.
         enum class State {
             CLOSED,
-            OPEN
+            OPEN,
         };
 
 /// \brief		SerialPort object is used to perform rx/tx serial communication.
@@ -48,14 +77,21 @@ namespace mn {
             /// \brief		Constructor that sets up serial port with the basic (required) parameters.
             SerialPort(const std::string &device, BaudRate baudRate);
 
-            //! @brief		Destructor. Closes serial port if still open.
+            /// \brief		Constructor that sets up serial port with the basic (required) parameters.
+            SerialPort(const std::string &device, speed_t baudRate);
+
+            /// \brief		Destructor. Closes serial port if still open.
             virtual ~SerialPort();
 
             /// \brief		Sets the device to use for serial port communications.
             /// \details    Method can be called when serial port is in any state.
             void SetDevice(const std::string &device);
 
+            /// \brief      Allows the user to set a standard baud rate.
             void SetBaudRate(BaudRate baudRate);
+
+            /// \brief      Allows the user to set a custom baud rate.
+            void SetBaudRate(speed_t baudRate);
 
             /// \brief      Sets the read timeout (in milliseconds)/blocking mode.
             /// \details    Only call when state != OPEN. This method manupulates VMIN and VTIME.
@@ -92,13 +128,19 @@ namespace mn {
         private:
 
             /// \brief		Returns a populated termios structure for the passed in file descriptor.
-            termios GetTermios();
+            // termios GetTermios();
 
             /// \brief		Configures the tty device as a serial port.
             /// \warning    Device must be open (valid file descriptor) when this is called.
             void ConfigureTermios();
 
-            void SetTermios(termios myTermios);
+            // void SetTermios(termios myTermios);
+
+            /// \brief		Returns a populated termios2 structure for the serial port pointed to by the file descriptor.
+            termios2 GetTermios2();
+
+            /// \brief      Assigns the provided tty settings to the serial port pointed to by the file descriptor.
+            void SetTermios2(termios2 tty);
 
             /// \brief      Keeps track of the serial port's state.
             State state_;
@@ -106,8 +148,14 @@ namespace mn {
             /// \brief      The file path to the serial port device (e.g. "/dev/ttyUSB0").
             std::string device_;
 
-            /// \brief      The current baud rate.
-            BaudRate baudRate_;
+            /// \brief      The type of baud rate that the user has specified.
+            BaudRateType baudRateType_;
+
+            /// \brief      The current baud rate if baudRateType_ == STANDARD.
+            BaudRate baudRateStandard_;
+
+            /// \brief      The current baud rate if baudRateType_ == CUSTOM.
+            speed_t baudRateCustom_;
 
             /// \brief		The file descriptor for the open file. This gets written to when Open() is called.
             int fileDesc_;
