@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v2.1.1] - 2021-04-05
+
+- Fixed bug where `echo` was not being set correctly.
+
 ## [v2.1.0] - 2020-11-08
 
 ### Added
