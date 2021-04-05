@@ -347,7 +347,12 @@ namespace CppLinuxSerial {
 		// Canonical input is when read waits for EOL or EOF characters before returning. In non-canonical mode, the rate at which
 		// read() returns is instead controlled by c_cc[VMIN] and c_cc[VTIME]
 		tty.c_lflag		&= ~ICANON;								// Turn off canonical input, which is suitable for pass-through
-        echo_ ? (tty.c_lflag | ECHO ) : (tty.c_lflag & ~(ECHO));	// Configure echo depending on echo_ boolean
+		// Configure echo depending on echo_ boolean
+        if(echo_) {
+			tty.c_lflag |= ECHO;
+		} else {
+			tty.c_lflag &= ~(ECHO);
+		}	
 		tty.c_lflag		&= ~ECHOE;								// Turn off echo erase (echo erase only relevant if canonical input is active)
 		tty.c_lflag		&= ~ECHONL;								//
 		tty.c_lflag		&= ~ISIG;								// Disables recognition of INTR (interrupt), QUIT and SUSP (suspend) characters
