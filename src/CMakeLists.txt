@@ -8,7 +8,8 @@ file(GLOB_RECURSE CppLinuxSerial_HEADERS
 
 add_library(CppLinuxSerial ${CppLinuxSerial_SRC} ${CppLinuxSerial_HEADERS})
 
-target_include_directories(CppLinuxSerial PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(CppLinuxSerial PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/../include>"
+                                                "$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}>")                                                  
 
 # On Linux, "sudo make install" will typically copy the library
 # into the folder /usr/local/bin
