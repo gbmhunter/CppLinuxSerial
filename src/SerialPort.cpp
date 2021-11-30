@@ -22,6 +22,8 @@
 // #include <asm/termios.h> // Terminal control definitions (struct termios)
 #include <asm/ioctls.h>
 #include <asm/termbits.h>
+#include <algorithm>
+#include <iterator>
 
 // User includes
 #include "CppLinuxSerial/Exception.hpp"
@@ -275,7 +277,7 @@ namespace CppLinuxSerial {
 		// This does no different than STANDARD atm, but let's keep
 		// them separate for now....
 		else if (baudRateType_ == BaudRateType::CUSTOM)
-		{ 
+		{
 			tty.c_cflag &= ~CBAUD;
 			tty.c_cflag |= CBAUDEX;
 			// tty.c_cflag |= BOTHER;
@@ -285,7 +287,7 @@ namespace CppLinuxSerial {
 
 			// #include <linux/serial.h>
 			// // configure port to use custom speed instead of 38400
-			// struct serial_struct ss; 
+			// struct serial_struct ss;
 			// ioctl(fileDesc_, TIOCGSERIAL, &ss);
 			// ss.flags = (ss.flags & ~ASYNC_SPD_MASK) | ASYNC_SPD_CUST;
 			// ss.custom_divisor = (ss.baud_base + (baudRateCustom_ / 2)) / baudRateCustom_;
@@ -300,7 +302,7 @@ namespace CppLinuxSerial {
 			// cfsetispeed(&tty, B38400);
 			// cfsetospeed(&tty, B38400);
 		}
-		else 
+		else
 		{
 			// Should never get here, bug in this libraries code!
 			assert(false);
@@ -352,7 +354,7 @@ namespace CppLinuxSerial {
 			tty.c_lflag |= ECHO;
 		} else {
 			tty.c_lflag &= ~(ECHO);
-		}	
+		}
 		tty.c_lflag		&= ~ECHOE;								// Turn off echo erase (echo erase only relevant if canonical input is active)
 		tty.c_lflag		&= ~ECHONL;								//
 		tty.c_lflag		&= ~ISIG;								// Disables recognition of INTR (interrupt), QUIT and SUSP (suspend) characters
@@ -386,6 +388,23 @@ namespace CppLinuxSerial {
 		}
 
 		int writeResult = write(fileDesc_, data.c_str(), data.size());
+
+		// Check status
+		if (writeResult == -1) {
+			throw std::system_error(EFAULT, std::system_category());
+		}
+	}
+
+       void SerialPort::WriteBinary(const std::vector<uint8_t>& data) {
+
+        if(state_ != State::OPEN)
+            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
+
+		if(fileDesc_ < 0) {
+			THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but file descriptor < 0, indicating file has not been opened.");
+		}
+
+		int writeResult = write(fileDesc_, data.data(), data.size());
 
 		// Check status
 		if (writeResult == -1) {
@@ -431,6 +450,35 @@ namespace CppLinuxSerial {
 		// If code reaches here, read must of been successful
 	}
 
+	void SerialPort::ReadBinary(std::vector<uint8_t>& data)
+	{
+        data.clear();
+
+		if(fileDesc_ == 0) {
+			//this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
+			//return false;
+			THROW_EXCEPT("Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
+		}
+
+		// Read from file
+        // We provide the underlying raw array from the readBuffer_ vector to this C api.
+        // This will work because we do not delete/resize the vector while this method
+        // is called
+		ssize_t n = read(fileDesc_, &readBuffer_[0], readBufferSize_B_);
+
+		// Error Handling
+		if(n < 0) {
+			// Read was unsuccessful
+			throw std::system_error(EFAULT, std::system_category());
+		}
+
+		if(n > 0) {
+            copy(readBuffer_.begin(), readBuffer_.begin() + n, back_inserter(data));
+		}
+
+		// If code reaches here, read must of been successful
+	}
+
 	// termios SerialPort::GetTermios() {
     //     if(fileDesc_ == -1)
     //         throw std::runtime_error("GetTermios() called but file descriptor was not valid.");
@@ -469,16 +517,16 @@ namespace CppLinuxSerial {
 	termios2 SerialPort::GetTermios2()
 	{
 		struct termios2 term2;
- 
+
         ioctl(fileDesc_, TCGETS2, &term2);
 
 		return term2;
- 
+
         // term2.c_cflag &= ~CBAUD;  /* Remove current BAUD rate */
         // term2.c_cflag |= BOTHER;  /* Allow custom BAUD rate using int input */
         // term2.c_ispeed = speed;   /* Set the input BAUD rate */
         // term2.c_ospeed = speed;   /* Set the output BAUD rate */
- 
+
         // ioctl(fd, TCSETS2, &term2);
 	}
 

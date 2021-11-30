@@ -58,7 +58,7 @@ namespace mn {
             B_115200,
             B_230400,
             B_460800,
-            B_CUSTOM, // Placeholder 
+            B_CUSTOM, // Placeholder
         };
 
         /// \brief      Represents the state of the serial port.
@@ -113,17 +113,29 @@ namespace mn {
             /// \brief		Closes the COM port.
             void Close();
 
-            /// \brief		Sends a message over the com port.
+            /// \brief		Sends a text message over the com port.
             /// \param		data		The data that will be written to the COM port.
             /// \throws		CppLinuxSerial::Exception if state != OPEN.
             void Write(const std::string& data);
 
-            /// \brief		Use to read from the COM port.
+            /// \brief		Sends a binary message over the com port.
+            /// \param		data		The data that will be written to the COM port.
+            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            void WriteBinary(const std::vector<uint8_t>& data);
+
+            /// \brief		Use to read text from the COM port.
             /// \param		data		The object the read characters from the COM port will be saved to.
             /// \param      wait_ms     The amount of time to wait for data. Set to 0 for non-blocking mode. Set to -1
             ///                 to wait indefinitely for new data.
             /// \throws		CppLinuxSerial::Exception if state != OPEN.
             void Read(std::string& data);
+
+            /// \brief		Use to read binary data from the COM port.
+            /// \param		data		The object the read uint8_t bytes from the COM port will be saved to.
+            /// \param      wait_ms     The amount of time to wait for data. Set to 0 for non-blocking mode. Set to -1
+            ///                 to wait indefinitely for new data.
+            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            void ReadBinary(std::vector<uint8_t>& data);
 
         private:
 
