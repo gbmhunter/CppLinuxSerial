@@ -10,7 +10,7 @@ Library for communicating with COM ports on a Linux system.
 
 * Simple API
 * Supports custom baud rates
-* cmake based build system
+* `cmake` based build system
 
 ## Installation
 
@@ -51,13 +51,13 @@ Library for communicating with COM ports on a Linux system.
 	$ sudo make install
 	```
 
-1. To run the unit tests (NOTE: because this uses virtual serial ports via `stty`, this only works on Linux!):
+1. To run the unit tests:
 
 	```bash
 	$ make run_unit_tests
 	```
 
-	If you get errors such as `Could not open device /dev/ttyS10. Is the device name correct and do you have read/write permission?" thrown in the test fixture's constructor.`, it is probably an issue with either creating the virtual serial ports or permissions to access them.
+	NOTE: The unit tests used to use virtual serial ports via `stty` on Linux to do more through testing. I ran into permission problems running stty on TravisCI after they did an update and had to remove tests (leaving almost no tests remaining). If anyone wants to add better unit tests, it is greatly welcomed! 
 
 ## Examples
 
@@ -73,7 +73,7 @@ int main() {
 	serialPort.SetTimeout(-1); // Block when reading until any data is received
 	serialPort.Open();
 
-	// Write some ASCII datae
+	// Write some ASCII data
 	serialPort.Write("Hello");
 
 	// Read some data back (will block until at least 1 byte is received due to the SetTimeout(-1) call above)

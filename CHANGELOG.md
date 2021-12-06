@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.2.1] - 2021-12-06
+
+- Fixed a build error by changing the branch cmake downloads googletest from master to main.
+
+## [v2.2.0] - 2021-12-03
+
+- ReadBinary() and WriteBinary() added to read/write raw data, instead of having to use strings (thanks to @RolandHughes for adding this).
+
 ## [v2.1.2] - 2021-07-01
 
 - Removed download of gtest if tests are not built.
