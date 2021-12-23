@@ -61,6 +61,26 @@ namespace mn {
             B_CUSTOM, // Placeholder
         };
 
+        /// \brief      Enumeration of all the valid num. of data bits. Must align with the options 
+        ///                 provided in termbits.h, i.e. CS5, CS6, CS7 and CS8.
+        enum class NumDataBits {
+            FIVE,
+            SIX,
+            SEVEN,
+            EIGHT,
+        };
+
+        enum class Parity {
+            NONE,
+            EVEN,
+            ODD,
+        };
+
+        enum class NumStopBits {
+            ONE,
+            TWO,
+        };
+
         /// \brief      Represents the state of the serial port.
         enum class State {
             CLOSED,
@@ -77,7 +97,10 @@ namespace mn {
             /// \brief		Constructor that sets up serial port with the basic (required) parameters.
             SerialPort(const std::string &device, BaudRate baudRate);
 
-            /// \brief		Constructor that sets up serial port with the basic (required) parameters.
+            /// \brief		Constructor that sets up serial port and allows the user to specify all the common parameters.
+            SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits);
+
+            /// \brief		Constructor that sets up serial port with the basic parameters, and a custom baud rate.
             SerialPort(const std::string &device, speed_t baudRate);
 
             /// \brief		Destructor. Closes serial port if still open.
@@ -87,11 +110,19 @@ namespace mn {
             /// \details    Method can be called when serial port is in any state.
             void SetDevice(const std::string &device);
 
-            /// \brief      Allows the user to set a standard baud rate.
+            /// \brief      Call this to set a standard baud rate.
             void SetBaudRate(BaudRate baudRate);
 
-            /// \brief      Allows the user to set a custom baud rate.
+            /// \brief      Call this to set a custom baud rate.
             void SetBaudRate(speed_t baudRate);
+
+            /// \brief      Call this to set the num. of data bits.
+            void SetNumDataBits(NumDataBits numDataBits);
+
+            /// \brief      Call this to set the parity.
+            void SetParity(Parity parity);
+
+            void SetNumStopBits(NumStopBits numStopBits);
 
             /// \brief      Sets the read timeout (in milliseconds)/blocking mode.
             /// \details    Only call when state != OPEN. This method manupulates VMIN and VTIME.
@@ -168,6 +199,15 @@ namespace mn {
 
             /// \brief      The current baud rate if baudRateType_ == CUSTOM.
             speed_t baudRateCustom_;
+
+            /// \brief      The num. of data bits. Defaults to 8 (most common).
+            NumDataBits numDataBits_ = NumDataBits::EIGHT;
+
+            /// \brief      The parity. Defaults to none (most common).
+            Parity parity_ = Parity::NONE;
+
+            /// \brief      The num. of stop bits. Defaults to 1 (most common).
+            NumStopBits numStopBits_ = NumStopBits::ONE;
 
             /// \brief		The file descriptor for the open file. This gets written to when Open() is called.
             int fileDesc_;

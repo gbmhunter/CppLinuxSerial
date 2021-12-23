@@ -58,6 +58,16 @@ namespace CppLinuxSerial {
         baudRateCustom_ = baudRate;
 	}
 
+	SerialPort::SerialPort(const std::string& device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits) :
+            SerialPort() {
+		device_ = device;
+		baudRateType_ = BaudRateType::STANDARD;
+        baudRateStandard_ = baudRate;
+		numDataBits_ = numDataBits;
+		parity_ = parity;
+		numStopBits_ = numStopBits;
+	}
+
 	SerialPort::~SerialPort() {
         try {
             Close();
@@ -73,19 +83,35 @@ namespace CppLinuxSerial {
         	ConfigureTermios();
 	}
 
-	void SerialPort::SetBaudRate(BaudRate baudRate)	{
-		std::cout << "standard called\n";
+	void SerialPort::SetBaudRate(BaudRate baudRate)	{		
 		baudRateType_ = BaudRateType::STANDARD;
 		baudRateStandard_ = baudRate;
         if(state_ == State::OPEN)
             ConfigureTermios();
 	}
 
-	void SerialPort::SetBaudRate(speed_t baudRate)	{
-		std::cout << " custom called\n";
+	void SerialPort::SetBaudRate(speed_t baudRate)	{		
 		baudRateType_ = BaudRateType::CUSTOM;
 		baudRateCustom_ = baudRate;
         if(state_ == State::OPEN)
+            ConfigureTermios();
+	}
+
+	void SerialPort::SetNumDataBits(NumDataBits numDataBits) {
+		numDataBits_ = numDataBits;
+		if(state_ == State::OPEN)
+            ConfigureTermios();
+	}
+
+	void SerialPort::SetParity(Parity parity) {
+		parity_ = parity;
+		if(state_ == State::OPEN)
+            ConfigureTermios();
+	}
+
+	void SerialPort::SetNumStopBits(NumStopBits numStopBits) {
+		numStopBits_ = numStopBits;
+		if(state_ == State::OPEN)
             ConfigureTermios();
 	}
 
@@ -132,10 +158,57 @@ namespace CppLinuxSerial {
 
 		//================= (.c_cflag) ===============//
 
-		tty.c_cflag     &=  ~PARENB;       	// No parity bit is added to the output characters
-		tty.c_cflag     &=  ~CSTOPB;		// Only one stop-bit is used
+		// Set num. data bits
+		// See https://man7.org/linux/man-pages/man3/tcflush.3.html
 		tty.c_cflag     &=  ~CSIZE;			// CSIZE is a mask for the number of bits per character
-		tty.c_cflag     |=  CS8;			// Set to 8 bits per character
+		switch(numDataBits_) {
+			case NumDataBits::FIVE:
+				tty.c_cflag     |=  CS5;
+				break;
+			case NumDataBits::SIX:
+				tty.c_cflag     |=  CS6;
+				break;
+			case NumDataBits::SEVEN:
+				tty.c_cflag     |=  CS7;
+				break;
+			case NumDataBits::EIGHT:
+				tty.c_cflag     |=  CS8;
+				break;
+			default:
+				THROW_EXCEPT("numDataBits_ value not supported!");
+		}
+		
+		// Set parity
+		// See https://man7.org/linux/man-pages/man3/tcflush.3.html
+		switch(parity_) {
+			case Parity::NONE:
+				tty.c_cflag     &=  ~PARENB;
+				break;
+			case Parity::EVEN:	
+				tty.c_cflag 	|=   PARENB;
+				tty.c_cflag		&=	 ~PARODD; // Clearing PARODD makes the parity even
+				break;
+			case Parity::ODD:
+				tty.c_cflag     |=   PARENB;
+				tty.c_cflag		|=	 PARODD;
+				break;
+			default:
+				THROW_EXCEPT("parity_ value not supported!");
+
+		}
+
+		// Set num. stop bits
+		switch(numStopBits_) {
+			case NumStopBits::ONE:
+				tty.c_cflag     &=  ~CSTOPB;
+				break;
+			case NumStopBits::TWO:
+				tty.c_cflag     |=  CSTOPB;
+				break;
+			default:
+				THROW_EXCEPT("numStopBits_ value not supported!");
+		}
+
 		tty.c_cflag     &=  ~CRTSCTS;       // Disable hadrware flow control (RTS/CTS)
 		tty.c_cflag     |=  CREAD | CLOCAL;     				// Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
