@@ -629,6 +629,15 @@ namespace CppLinuxSerial {
             THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called while state == OPEN.");
         timeout_ms_ = timeout_ms;
     }
+    
+    int32_t SerialPort::InWaiting() {
+		if(state_ != State::OPEN)
+            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
+        int32_t ret = 0;
+        ioctl(fileDesc_, FIONREAD, &ret);
+        return ret;
+        
+    }
 
 } // namespace CppLinuxSerial
 } // namespace mn
