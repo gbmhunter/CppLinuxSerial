@@ -168,6 +168,9 @@ namespace mn {
             /// \throws		CppLinuxSerial::Exception if state != OPEN.
             void ReadBinary(std::vector<uint8_t>& data);
 
+			/// \brief		Use to get number of bytes available in buffer
+            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            int32_t InWaiting();
         private:
 
             /// \brief		Returns a populated termios structure for the passed in file descriptor.
