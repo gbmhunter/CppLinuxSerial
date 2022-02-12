@@ -168,10 +168,12 @@ namespace mn {
             /// \throws		CppLinuxSerial::Exception if state != OPEN.
             void ReadBinary(std::vector<uint8_t>& data);
 
-        private:
+			/// \brief		Use to get number of bytes available in receive buffer.
+            /// \returns    The number of bytes available in the receive buffer (ready to be read).
+            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            int32_t Available();
 
-            /// \brief		Returns a populated termios structure for the passed in file descriptor.
-            // termios GetTermios();
+        private:
 
             /// \brief		Configures the tty device as a serial port.
             /// \warning    Device must be open (valid file descriptor) when this is called.
