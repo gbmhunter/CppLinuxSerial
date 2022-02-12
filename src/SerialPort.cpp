@@ -630,7 +630,7 @@ namespace CppLinuxSerial {
         timeout_ms_ = timeout_ms;
     }
     
-    int32_t SerialPort::InWaiting() {
+    int32_t SerialPort::Available() {
 		if(state_ != State::OPEN)
             THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
         int32_t ret = 0;
