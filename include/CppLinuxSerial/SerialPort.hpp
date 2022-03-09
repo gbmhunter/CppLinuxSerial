@@ -81,6 +81,13 @@ namespace mn {
             TWO,
         };
 
+        /// \brief      Adding the ability to choose a flow control strategy on instantiation
+        enum class FlowControl {
+            NONE,
+            HARDWARE,
+            SOFTWARE,
+        };
+
         /// \brief      Represents the state of the serial port.
         enum class State {
             CLOSED,
@@ -99,6 +106,9 @@ namespace mn {
 
             /// \brief		Constructor that sets up serial port and allows the user to specify all the common parameters.
             SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits);
+
+            /// \brief		Constructor that sets up serial port and allows the user to specify all the common parameters + Flow control.
+            SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits, FlowControl flow);
 
             /// \brief		Constructor that sets up serial port with the basic parameters, and a custom baud rate.
             SerialPort(const std::string &device, speed_t baudRate);
@@ -211,6 +221,8 @@ namespace mn {
             /// \brief      The num. of stop bits. Defaults to 1 (most common).
             NumStopBits numStopBits_ = NumStopBits::ONE;
 
+            /// \brief      The flow control of the system. Defaults to None (most common).
+            FlowControl flowControl_ = FlowControl::NONE;
             /// \brief		The file descriptor for the open file. This gets written to when Open() is called.
             int fileDesc_;
 
