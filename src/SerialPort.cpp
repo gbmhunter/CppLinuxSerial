@@ -638,6 +638,9 @@ namespace CppLinuxSerial {
         return ret;
         
     }
+    State SerialPort::getState() {
+      return state_;
+    }
 
 } // namespace CppLinuxSerial
 } // namespace mn
