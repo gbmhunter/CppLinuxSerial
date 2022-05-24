@@ -175,7 +175,7 @@ namespace mn {
 
             /// \brief          Use to get the state of the serial port
             /// \returns        The state of the serial port
-            State getState();
+            State GetState();
 
         private:
 

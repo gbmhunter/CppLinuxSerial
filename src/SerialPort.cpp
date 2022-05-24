@@ -638,7 +638,7 @@ namespace CppLinuxSerial {
         return ret;
         
     }
-    State SerialPort::getState() {
+    State SerialPort::GetState() {
       return state_;
     }
 
