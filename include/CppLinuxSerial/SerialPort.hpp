@@ -173,6 +173,10 @@ namespace mn {
             /// \throws		CppLinuxSerial::Exception if state != OPEN.
             int32_t Available();
 
+            /// \brief          Use to get the state of the serial port
+            /// \returns        The state of the serial port
+            State GetState();
+
         private:
 
             /// \brief		Configures the tty device as a serial port.
