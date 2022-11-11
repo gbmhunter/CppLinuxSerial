@@ -68,6 +68,17 @@ namespace CppLinuxSerial {
 		numStopBits_ = numStopBits;
 	}
 
+	SerialPort::SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits, FlowControl flow):
+            SerialPort() {
+		device_ = device;
+		baudRateType_ = BaudRateType::STANDARD;
+        baudRateStandard_ = baudRate;
+		numDataBits_ = numDataBits;
+		parity_ = parity;
+		numStopBits_ = numStopBits;
+		flowControl_ = flow;
+	}
+
 	SerialPort::~SerialPort() {
         try {
             Close();
@@ -209,7 +220,22 @@ namespace CppLinuxSerial {
 				THROW_EXCEPT("numStopBits_ value not supported!");
 		}
 
-		tty.c_cflag     &=  ~CRTSCTS;       // Disable hadrware flow control (RTS/CTS)
+		switch(flowControl_){
+			case FlowControl::NONE:
+				tty.c_cflag     &=  ~CRTSCTS;	
+			break;
+
+			case FlowControl::HARDWARE:
+				tty.c_cflag		|= CRTSCTS;
+			break;
+
+			default:
+				THROW_EXCEPT("flowControl_ value not supported!");
+			break;
+		}
+		       // Disable hardware flow control (RTS/CTS)
+		
+		
 		tty.c_cflag     |=  CREAD | CLOCAL;     				// Turn on READ & ignore ctrl lines (CLOCAL = 1)
 
 
@@ -414,7 +440,16 @@ namespace CppLinuxSerial {
 
 		//======================== (.c_iflag) ====================//
 
-		tty.c_iflag     &= ~(IXON | IXOFF | IXANY);			// Turn off s/w flow ctrl
+		switch(flowControl_){
+			case FlowControl::NONE:
+				tty.c_iflag     &= ~(IXON | IXOFF | IXANY);
+			break;
+
+			case FlowControl::SOFTWARE:
+				tty.c_iflag     |= (IXON | IXOFF | IXANY);
+			break;
+		}
+					// Turn off s/w flow ctrl
 		tty.c_iflag 	&= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
 
 		//=========================== LOCAL MODES (c_lflag) =======================//
@@ -637,6 +672,9 @@ namespace CppLinuxSerial {
         ioctl(fileDesc_, FIONREAD, &ret);
         return ret;
         
+    }
+    State SerialPort::GetState() {
+      return state_;
     }
 
 } // namespace CppLinuxSerial
