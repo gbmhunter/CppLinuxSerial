@@ -34,7 +34,7 @@ namespace mn {
             CUSTOM,
         };
 
-        /// \brief		Strongly-typed enumeration of baud rates for use with the SerialPort class
+        /// \brief      Strongly-typed enumeration of baud rates for use with the SerialPort class
         /// \details    Specifies all the same baud rates as UNIX, as well as B_CUSTOM to specify your
         ///             own. See https://linux.die.net/man/3/cfsetispeed for list of supported UNIX baud rates.
         enum class BaudRate {
@@ -81,7 +81,7 @@ namespace mn {
             TWO,
         };
 
-        /// \brief      Adding the ability to choose a flow control strategy on instantiation
+        /// \brief      All the possible options for setting the flow control.
         enum class FlowControl {
             NONE,
             HARDWARE,
@@ -94,29 +94,29 @@ namespace mn {
             OPEN,
         };
 
-/// \brief		SerialPort object is used to perform rx/tx serial communication.
+        /// \brief      SerialPort object is used to perform rx/tx serial communication.
         class SerialPort {
 
         public:
-            /// \brief		Default constructor. You must specify at least the device before calling Open().
+            /// \brief      Default constructor. You must specify at least the device before calling Open().
             SerialPort();
 
-            /// \brief		Constructor that sets up serial port with the basic (required) parameters.
+            /// \brief      Constructor that sets up serial port with the basic (required) parameters.
             SerialPort(const std::string &device, BaudRate baudRate);
 
-            /// \brief		Constructor that sets up serial port and allows the user to specify all the common parameters.
+            /// \brief      Constructor that sets up serial port and allows the user to specify all the common parameters.
             SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits);
 
-            /// \brief		Constructor that sets up serial port and allows the user to specify all the common parameters + Flow control.
+            /// \brief      Constructor that sets up serial port and allows the user to specify all the common parameters and flow control.
             SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits, FlowControl flow);
 
-            /// \brief		Constructor that sets up serial port with the basic parameters, and a custom baud rate.
+            /// \brief      Constructor that sets up serial port with the basic parameters, and a custom baud rate.
             SerialPort(const std::string &device, speed_t baudRate);
 
-            /// \brief		Destructor. Closes serial port if still open.
+            /// \brief      Destructor. Closes serial port if still open.
             virtual ~SerialPort();
 
-            /// \brief		Sets the device to use for serial port communications.
+            /// \brief      Sets the device to use for serial port communications.
             /// \details    Method can be called when serial port is in any state.
             void SetDevice(const std::string &device);
 
@@ -132,6 +132,7 @@ namespace mn {
             /// \brief      Call this to set the parity.
             void SetParity(Parity parity);
 
+            /// \brief      Call this to set the number of stop bits.
             void SetNumStopBits(NumStopBits numStopBits);
 
             /// \brief      Sets the read timeout (in milliseconds)/blocking mode.
@@ -142,43 +143,43 @@ namespace mn {
             ///             25500ms (another Linux API restriction).
             void SetTimeout(int32_t timeout_ms);
 
-            /// \brief		Enables/disables echo.
-            /// \param		value		Pass in true to enable echo, false to disable echo.
+            /// \brief      Enables/disables echo.
+            /// \param      value       Pass in true to enable echo, false to disable echo.
             void SetEcho(bool value);
 
-            /// \brief		Opens the COM port for use.
-            /// \throws		CppLinuxSerial::Exception if device cannot be opened.
-            /// \note		Must call this before you can configure the COM port.
+            /// \brief      Opens the COM port for use.
+            /// \throws     CppLinuxSerial::Exception if device cannot be opened.
+            /// \note       Must call this before you can configure the COM port.
             void Open();
 
-            /// \brief		Closes the COM port.
+            /// \brief      Closes the COM port.
             void Close();
 
-            /// \brief		Sends a text message over the com port.
-            /// \param		data		The data that will be written to the COM port.
-            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            /// \brief      Sends a text message over the com port.
+            /// \param      data        The data that will be written to the COM port.
+            /// \throws     CppLinuxSerial::Exception if state != OPEN.
             void Write(const std::string& data);
 
-            /// \brief		Sends a binary message over the com port.
-            /// \param		data		The data that will be written to the COM port.
-            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            /// \brief      Sends a binary message over the com port.
+            /// \param      data        The data that will be written to the COM port.
+            /// \throws     CppLinuxSerial::Exception if state != OPEN.
             void WriteBinary(const std::vector<uint8_t>& data);
 
-            /// \brief		Use to read text from the COM port.
-            /// \param		data		The object the read characters from the COM port will be saved to.
+            /// \brief      Use to read text from the COM port.
+            /// \param      data        The object the read characters from the COM port will be saved to.
             /// \param      wait_ms     The amount of time to wait for data. Set to 0 for non-blocking mode. Set to -1
             ///                 to wait indefinitely for new data.
-            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            /// \throws     CppLinuxSerial::Exception if state != OPEN.
             void Read(std::string& data);
 
-            /// \brief		Use to read binary data from the COM port.
-            /// \param		data		The object the read uint8_t bytes from the COM port will be saved to.
+            /// \brief      Use to read binary data from the COM port.
+            /// \param      data        The object the read uint8_t bytes from the COM port will be saved to.
             /// \param      wait_ms     The amount of time to wait for data. Set to 0 for non-blocking mode. Set to -1
             ///                 to wait indefinitely for new data.
-            /// \throws		CppLinuxSerial::Exception if state != OPEN.
+            /// \throws     CppLinuxSerial::Exception if state != OPEN.
             void ReadBinary(std::vector<uint8_t>& data);
 
-			/// \brief		Use to get number of bytes available in receive buffer.
+            /// \brief		Use to get number of bytes available in receive buffer.
             /// \returns    The number of bytes available in the receive buffer (ready to be read).
             /// \throws		CppLinuxSerial::Exception if state != OPEN.
             int32_t Available();
@@ -189,13 +190,13 @@ namespace mn {
 
         private:
 
-            /// \brief		Configures the tty device as a serial port.
+            /// \brief      Configures the tty device as a serial port.
             /// \warning    Device must be open (valid file descriptor) when this is called.
             void ConfigureTermios();
 
             // void SetTermios(termios myTermios);
 
-            /// \brief		Returns a populated termios2 structure for the serial port pointed to by the file descriptor.
+            /// \brief      Returns a populated termios2 structure for the serial port pointed to by the file descriptor.
             termios2 GetTermios2();
 
             /// \brief      Assigns the provided tty settings to the serial port pointed to by the file descriptor.
@@ -227,7 +228,8 @@ namespace mn {
 
             /// \brief      The flow control of the system. Defaults to None (most common).
             FlowControl flowControl_ = FlowControl::NONE;
-            /// \brief		The file descriptor for the open file. This gets written to when Open() is called.
+
+            /// \brief      The file descriptor for the open file. This gets written to when Open() is called.
             int fileDesc_;
 
             bool echo_;

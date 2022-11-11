@@ -67,7 +67,8 @@ Library for communicating with COM ports on a Linux system.
 using namespace mn::CppLinuxSerial;
 
 int main() {
-	// Create serial port object and open serial port at 57600 buad, 8 data bits, no parity bit, and one stop bit (8n1)
+	// Create serial port object and open serial port at 57600 buad, 8 data bits, no parity bit, one stop bit (8n1),
+	// and no flow control
 	SerialPort serialPort("/dev/ttyUSB0", BaudRate::B_57600, NumDataBits::EIGHT, Parity::NONE, NumStopBits::ONE);
 	// Use SerialPort serialPort("/dev/ttyACM0", 13000); instead if you want to provide a custom baud rate
 	serialPort.SetTimeout(-1); // Block when reading until any data is received
@@ -89,6 +90,19 @@ If the above code was in a file called `main.cpp` and you had installed `CppLinu
 
 ```bash
 g++ main.cpp -lCppLinuxSerial
+```
+
+If you wanted to also set flow control (e.g. hardware), you can add it onto the end of the constructor as shown below. If you don't set it, it defaults to no flow control.
+
+```c++
+SerialPort serialPort("/dev/ttyUSB0", BaudRate::B_57600, NumDataBits::EIGHT, Parity::NONE, NumStopBits::ONE, FlowControl::HARDWARE);
+```
+
+If you want to read and write binary rather than strings, you can use `WriteBinary()` and `ReadBinary()` which take vectors of bytes rather than `std::string`:
+
+```c++
+serialPort.WriteBinary(const std::vector<uint8_t>& data);
+serialPort.ReadBinary(std::vector<uint8_t>& data);
 ```
 
 For more examples, see the files in `test/`.
