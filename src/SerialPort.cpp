@@ -68,7 +68,8 @@ namespace CppLinuxSerial {
         numStopBits_ = numStopBits;
     }
 
-    SerialPort::SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits, FlowControl flowControl):
+    SerialPort::SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits,
+        HardwareFlowControl hardwareFlowControl, SoftwareFlowControl softwareFlowControl):
             SerialPort() {
         device_ = device;
         baudRateType_ = BaudRateType::STANDARD;
@@ -76,7 +77,8 @@ namespace CppLinuxSerial {
         numDataBits_ = numDataBits;
         parity_ = parity;
         numStopBits_ = numStopBits;
-        flowControl_ = flowControl;
+        hardwareFlowControl_ = hardwareFlowControl;
+        softwareFlowControl_ = softwareFlowControl;
     }
 
     SerialPort::~SerialPort() {
@@ -216,18 +218,19 @@ namespace CppLinuxSerial {
         }
 
         // Configure flow control
-        switch(flowControl_){
-            case FlowControl::NONE:
-                tty.c_cflag     &=  ~CRTSCTS;	
-            break;
+        switch(hardwareFlowControl_){
+            case HardwareFlowControl::OFF:
+                tty.c_cflag &= ~CRTSCTS;
+                break;
 
-            case FlowControl::HARDWARE: // Hardware flow control (RTS/CTS)
-                tty.c_cflag     |= CRTSCTS;
-            break;
+            case HardwareFlowControl::ON: // Hardware flow control (RTS/CTS)
+                tty.c_cflag |= CRTSCTS;
+                break;
 
             default:
+                // We should never get here.
                 THROW_EXCEPT("flowControl_ value not supported!");
-            break;
+                break;
         }
 
         tty.c_cflag     |=  CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
@@ -434,32 +437,32 @@ namespace CppLinuxSerial {
 
         //======================== (.c_iflag) ====================//
 
-        switch(flowControl_){
-            case FlowControl::NONE:
-                tty.c_iflag     &= ~(IXON | IXOFF | IXANY);
+        switch(softwareFlowControl_){
+            case SoftwareFlowControl::OFF:
+                tty.c_iflag &= ~(IXON | IXOFF | IXANY);
             break;
 
-            case FlowControl::SOFTWARE:
-                tty.c_iflag     |= (IXON | IXOFF | IXANY);
+            case SoftwareFlowControl::ON:
+                tty.c_iflag |= (IXON | IXOFF | IXANY);
             break;
         }
-                    // Turn off s/w flow ctrl
+        
         tty.c_iflag 	&= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL);
 
         //=========================== LOCAL MODES (c_lflag) =======================//
 
         // Canonical input is when read waits for EOL or EOF characters before returning. In non-canonical mode, the rate at which
         // read() returns is instead controlled by c_cc[VMIN] and c_cc[VTIME]
-        tty.c_lflag		&= ~ICANON;                             // Turn off canonical input, which is suitable for pass-through
+        tty.c_lflag		&= ~ICANON;    // Turn off canonical input, which is suitable for pass-through
         // Configure echo depending on echo_ boolean
         if(echo_) {
             tty.c_lflag |= ECHO;
         } else {
             tty.c_lflag &= ~(ECHO);
         }
-        tty.c_lflag		&= ~ECHOE;                              // Turn off echo erase (echo erase only relevant if canonical input is active)
-        tty.c_lflag		&= ~ECHONL;                             //
-        tty.c_lflag		&= ~ISIG;                               // Disables recognition of INTR (interrupt), QUIT and SUSP (suspend) characters
+        tty.c_lflag		&= ~ECHOE;     // Turn off echo erase (echo erase only relevant if canonical input is active)
+        tty.c_lflag		&= ~ECHONL;    //
+        tty.c_lflag		&= ~ISIG;      // Disables recognition of INTR (interrupt), QUIT and SUSP (suspend) characters
 
 
         // Try and use raw function call

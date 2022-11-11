@@ -2,7 +2,7 @@
 /// \file 			SerialPort.hpp
 /// \author 		Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
 /// \created		2014-01-07
-/// \last-modified 	2019-05-30
+/// \last-modified 	2022-11-12
 /// \brief			The main serial port class.
 /// \details
 ///					See README.rst in repo root dir for more info.
@@ -81,11 +81,16 @@ namespace mn {
             TWO,
         };
 
-        /// \brief      All the possible options for setting the flow control.
-        enum class FlowControl {
-            NONE,
-            HARDWARE,
-            SOFTWARE,
+        /// \brief      All the possible options for setting the hardware flow control.
+        enum class HardwareFlowControl {
+            OFF,
+            ON,
+        };
+
+        /// \brief      All the possible options for setting the software flow control.
+        enum class SoftwareFlowControl {
+            OFF,
+            ON,
         };
 
         /// \brief      Represents the state of the serial port.
@@ -108,7 +113,8 @@ namespace mn {
             SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits);
 
             /// \brief      Constructor that sets up serial port and allows the user to specify all the common parameters and flow control.
-            SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, NumStopBits numStopBits, FlowControl flow);
+            SerialPort(const std::string &device, BaudRate baudRate, NumDataBits numDataBits, Parity parity, 
+                NumStopBits numStopBits, HardwareFlowControl hardwareFlowControl, SoftwareFlowControl softwareFlowControl);
 
             /// \brief      Constructor that sets up serial port with the basic parameters, and a custom baud rate.
             SerialPort(const std::string &device, speed_t baudRate);
@@ -226,8 +232,11 @@ namespace mn {
             /// \brief      The num. of stop bits. Defaults to 1 (most common).
             NumStopBits numStopBits_ = NumStopBits::ONE;
 
-            /// \brief      The flow control of the system. Defaults to None (most common).
-            FlowControl flowControl_ = FlowControl::NONE;
+            /// \brief      The hardware flow control setting. Defaults to OFF (most common).
+            HardwareFlowControl hardwareFlowControl_ = HardwareFlowControl::OFF;
+
+            /// \brief      The software flow control setting. Defaults to OFF (most common).
+            SoftwareFlowControl softwareFlowControl_ = SoftwareFlowControl::OFF;
 
             /// \brief      The file descriptor for the open file. This gets written to when Open() is called.
             int fileDesc_;
@@ -242,7 +251,6 @@ namespace mn {
             static constexpr BaudRate defaultBaudRate_ = BaudRate::B_57600;
             static constexpr int32_t defaultTimeout_ms_ = -1;
             static constexpr unsigned char defaultReadBufferSize_B_ = 255;
-
 
         };
 

@@ -8,8 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [vX.X.X]
 
 - Replaced all tabs in code with spaces, which should fix the ugly code rendering in GitHub.
-- Added ability to set/change the flow control (hardware, software or none).
+- Added ability to set/change both hardware and software flow control.
 - Added some ready-to-run examples in the new `example/` directory.
+- Added a section in the README on WSL usage.
 
 ## [v2.4.0] - 2022-02-12
 
