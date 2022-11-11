@@ -5,12 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [vX.X.X]
+## [v2.5.0] - 2022-11-12
 
 - Replaced all tabs in code with spaces, which should fix the ugly code rendering in GitHub.
-- Added ability to set/change both hardware and software flow control.
+- Added ability to set/change both hardware and software flow control (thanks to [Vittorio Francescon](https://github.com/VFrancescon/) for helping with this one).
 - Added some ready-to-run examples in the new `example/` directory.
-- Added a section in the README on WSL usage.
+- Added a section in the README on WSL (Windows Subsystem for Linux) usage.
 
 ## [v2.4.0] - 2022-02-12
 
