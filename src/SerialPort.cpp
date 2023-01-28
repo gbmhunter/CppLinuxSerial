@@ -533,6 +533,17 @@ namespace CppLinuxSerial {
         // is called
         ssize_t n = read(fileDesc_, &readBuffer_[0], readBufferSize_B_);
 
+        if(n == 0)
+        {
+            struct termios2 term2;
+            int rv = ioctl(fileDesc_, TCGETS2, &term2);
+
+            if(rv != 0)
+            {
+                throw std::system_error(EFAULT, std::system_category());
+            }
+        }
+
         // Error Handling
         if(n < 0) {
             // Read was unsuccessful
