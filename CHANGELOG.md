@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.6.0] - 2023-02-02
+
+- `Read()` and `ReadBinary()` now throw exceptions if they detect that the serial device has been disconnected (thanks to [aldoshkind](https://github.com/aldoshkind) for helping with this one).
+- Added Arduino testing instructions to the README.
+
 ## [v2.5.0] - 2022-11-12
 
 - Replaced all tabs in code with spaces, which should fix the ugly code rendering in GitHub.
