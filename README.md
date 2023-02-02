@@ -143,7 +143,47 @@ Attaching the Arduino Uno (need to be done with Admin priviliges the first time 
 usbipd wsl attach --busid=1-5
 ```
 
-`/dev/ttyACM0` now appears inside WSL, and you can use CppLinuxSerial with this device like usual.
+`/dev/ttyACM0` now appears inside WSL, and you can use `CppLinuxSerial` with this device like usual.
+
+NOTE: Sometimes `/dev/ttyACM0` is not part of the dialout group, so even with your user being part of that group, you will get permission denied errors when trying to access the serial port. Sometimes using `chmod` to change the permissions works:
+
+```
+sudo chmod 666 /dev/ttyACM0 
+```
+
+## Tests
+
+### Prerequisties
+
+Install arduino:avr platform:
+
+```
+$ arduino-cli core install arduino:avr
+```
+
+Detect attached Arduino boards with:
+
+```
+$ arduino-cli board list
+```
+
+Compile:
+
+```
+arduino-cli compile --fqbn arduino:avr:uno Basic/
+```
+
+Upload:
+
+```
+arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:uno Basic/
+```
+
+### Running
+
+```
+g++ main.cpp -lCppLinuxSerial
+```
 
 ## Changelog
 

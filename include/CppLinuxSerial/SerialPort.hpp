@@ -175,14 +175,19 @@ namespace mn {
             /// \param      data        The object the read characters from the COM port will be saved to.
             /// \param      wait_ms     The amount of time to wait for data. Set to 0 for non-blocking mode. Set to -1
             ///                 to wait indefinitely for new data.
-            /// \throws     CppLinuxSerial::Exception if state != OPEN.
+            /// \note       Use ReadBinary() if you want to interpret received data as binary.
+            /// \throws     
+            ///             CppLinuxSerial::Exception if state != OPEN.
+            ///             std::system_error() if device has been disconnected.
             void Read(std::string& data);
 
             /// \brief      Use to read binary data from the COM port.
             /// \param      data        The object the read uint8_t bytes from the COM port will be saved to.
             /// \param      wait_ms     The amount of time to wait for data. Set to 0 for non-blocking mode. Set to -1
             ///                 to wait indefinitely for new data.
+            /// \note       Use Read() if you want to interpret received data as a string.
             /// \throws     CppLinuxSerial::Exception if state != OPEN.
+            ///             std::system_error() if device has been disconnected.
             void ReadBinary(std::vector<uint8_t>& data);
 
             /// \brief		Use to get number of bytes available in receive buffer.
