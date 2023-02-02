@@ -538,9 +538,17 @@ namespace CppLinuxSerial {
             // Read was unsuccessful
             throw std::system_error(EFAULT, std::system_category());
         }
-
-        if(n > 0) {
+        else if(n > 0) {
             data = std::string(&readBuffer_[0], n);
+        }
+        else if(n == 0) {
+            // n == 0 means EOS, but also returned on device disconnection. We try to get termios2 to distinguish two these two states
+            struct termios2 term2;
+            int rv = ioctl(fileDesc_, TCGETS2, &term2);
+
+            if(rv != 0) {
+                throw std::system_error(EFAULT, std::system_category());
+            }
         }
 
         // If code reaches here, read must of been successful
