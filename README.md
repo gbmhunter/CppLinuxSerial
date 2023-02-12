@@ -71,15 +71,19 @@ int main() {
 	// and no flow control
 	SerialPort serialPort("/dev/ttyUSB0", BaudRate::B_57600, NumDataBits::EIGHT, Parity::NONE, NumStopBits::ONE);
 	// Use SerialPort serialPort("/dev/ttyACM0", 13000); instead if you want to provide a custom baud rate
-	serialPort.SetTimeout(-1); // Block when reading until any data is received
+	serialPort.SetTimeout(100); // Block for up to 100ms to receive data
 	serialPort.Open();
+
+	// WARNING: If using the Arduino Uno or similar, you may want to delay here, as opening the serial port causes
+	// the micro to reset!
 
 	// Write some ASCII data
 	serialPort.Write("Hello");
 
-	// Read some data back (will block until at least 1 byte is received due to the SetTimeout(-1) call above)
+	// Read some data back (will block for up to 100ms due to the SetTimeout(100) call above)
 	std::string readData;
 	serialPort.Read(readData);
+	std::cout << "Read data = \"" << readData << "\"" << std::endl;
 
 	// Close the serial port
 	serialPort.Close();
@@ -153,37 +157,42 @@ sudo chmod 666 /dev/ttyACM0
 
 ## Tests
 
+Serial port testing cannot really be done easily on cloud-based CICD platforms, as serial ports and devices connected to these ports are not readibly available (nor configurable). `CppLinuxSerial` relies on running tests manually on your local Linux OS, alongside a connected Arduino Uno configured to echo serial data back (at a later data this could be reconfigured to cycle through tests at different baud rates, parity settings, e.t.c).
+
 ### Prerequisties
 
-Install arduino:avr platform:
+You will need:
+
+* Arduino Uno (or equivalent) dev kit.
+* Linux OS.
+
+Install the arduino-cli as per https://arduino.github.io/arduino-cli/0.21/installation/ on your local Linux machine.
+
+Install the `arduino:avr` platform:
 
 ```
 $ arduino-cli core install arduino:avr
 ```
 
-Detect attached Arduino boards with:
+Make sure Arduino board is detected with:
 
 ```
 $ arduino-cli board list
 ```
 
-Compile:
-
-```
-arduino-cli compile --fqbn arduino:avr:uno Basic/
-```
-
-Upload:
-
-```
-arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:uno Basic/
-```
-
 ### Running
 
+Run the following bash script:
+
 ```
-g++ main.cpp -lCppLinuxSerial
+./test/arduino/run.sh 
 ```
+
+This script will:
+
+1. Build and install `CppLinuxSerial` onto your local Linux OS.
+1. Build and upload the test Arduino firmware to the connected Arduino Uno (it assumes it's connected to `/dev/ttyACM0`).
+1. Build and run the test C++ application. This sends serial data to the Uno via CppLinuxSerial and expects the data to be echoed back.
 
 ## Changelog
 

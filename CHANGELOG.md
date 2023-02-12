@@ -5,6 +5,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.7.0] - 2023-02-13
+
+- `Read()` and `ReadBinary()` now append to the provided data containers (string or vector) rather than erase and write.
+- Added `run.sh` bash script for running local serial port tests with connected Arduino Uno (see README). Updated local tests to write and read back data in both string and binary forms.
+
 ## [v2.6.0] - 2023-02-02
 
 - `Read()` and `ReadBinary()` now throw exceptions if they detect that the serial device has been disconnected (thanks to [aldoshkind](https://github.com/aldoshkind) for helping with this one).
