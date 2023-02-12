@@ -2,7 +2,7 @@
 //! @file           SerialPort.cpp
 //! @author         Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
 //! @created        2014-01-07
-//! @last-modified  2022-11-11
+//! @last-modified  2023-02-13
 //! @brief          The main serial port class.
 //! @details
 //!             See README.rst in repo root dir for more info.
@@ -517,10 +517,7 @@ namespace CppLinuxSerial {
         }
     }
 
-    void SerialPort::Read(std::string& data)
-    {
-        data.clear();
-
+    void SerialPort::Read(std::string& data) {
         if(fileDesc_ == 0) {
             //this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
             //return false;
@@ -548,16 +545,13 @@ namespace CppLinuxSerial {
             }
         }
         else if(n > 0) {
-            data = std::string(&readBuffer_[0], n);
+            data += std::string(&readBuffer_[0], n);
         }
 
         // If code reaches here, read must of been successful
     }
 
-    void SerialPort::ReadBinary(std::vector<uint8_t>& data)
-    {
-        data.clear();
-
+    void SerialPort::ReadBinary(std::vector<uint8_t>& data) {
         if(fileDesc_ == 0) {
             //this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
             //return false;
@@ -574,8 +568,7 @@ namespace CppLinuxSerial {
         if(n < 0) {
             // Read was unsuccessful
             throw std::system_error(EFAULT, std::system_category());
-        }
-        else if(n == 0) {
+        } else if(n == 0) {
             // n == 0 means EOS, but also returned on device disconnection. We try to get termios2 to distinguish two these two states
             struct termios2 term2;
             int rv = ioctl(fileDesc_, TCGETS2, &term2);
@@ -583,9 +576,8 @@ namespace CppLinuxSerial {
             if(rv != 0) {
                 throw std::system_error(EFAULT, std::system_category());
             }
-        }
-        else if(n > 0) {
-            copy(readBuffer_.begin(), readBuffer_.begin() + n, back_inserter(data));
+        } else if(n > 0) {
+            std::copy(readBuffer_.begin(), readBuffer_.begin() + n, back_inserter(data));
         }
 
         // If code reaches here, read must of been successful
