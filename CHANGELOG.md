@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [v2.7.1] - 2023-03-16
+
+- CMake config updated with exporting and generation of a CMake config file so that end users can simply do (thanks to https://github.com/borgmanJeremy for this contribution):
+
+    ```cmake
+    find_package(CppLinuxSerial REQUIRED)
+    ...
+    ...
+    target_link_libraries(target CppLinuxSerial::CppLinuxSerial)
+    ```
+
 ## [v2.7.0] - 2023-02-13
 
 - `Read()` and `ReadBinary()` now append to the provided data containers (string or vector) rather than erase and write.

@@ -59,6 +59,17 @@ Library for communicating with COM ports on a Linux system.
 
 	NOTE: The unit tests used to use virtual serial ports via `stty` on Linux to do more through testing. I ran into permission problems running stty on TravisCI after they did an update and had to remove tests (leaving almost no tests remaining). If anyone wants to add better unit tests, it is greatly welcomed! 
 
+## Using This Project As A CMake Deoendency
+
+This project uses CMake and the export feature, so in a downstream CMake project that uses CppLinuxSerial as a dependency you should just be able to do (thanks to https://github.com/borgmanJeremy for this contribution):
+
+```cmake
+find_package(CppLinuxSerial REQUIRED)
+...
+...
+target_link_libraries(target CppLinuxSerial::CppLinuxSerial)
+```
+
 ## Examples
 
 ```c++
