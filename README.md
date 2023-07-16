@@ -2,7 +2,7 @@
 
 Linux serial port library written in C++.
 
-[![Build Status](https://travis-ci.org/gbmhunter/CppLinuxSerial.svg?branch=master)](https://travis-ci.org/gbmhunter/CppLinuxSerial)
+[![CMake](https://github.com/gbmhunter/CppLinuxSerial/actions/workflows/cmake.yml/badge.svg)](https://github.com/gbmhunter/CppLinuxSerial/actions/workflows/cmake.yml)
 
 ## Description
 
@@ -168,7 +168,7 @@ sudo chmod 666 /dev/ttyACM0
 
 ## Tests
 
-Serial port testing cannot really be done easily on cloud-based CICD platforms, as serial ports and devices connected to these ports are not readibly available (nor configurable). `CppLinuxSerial` relies on running tests manually on your local Linux OS, alongside a connected Arduino Uno configured to echo serial data back (at a later data this could be reconfigured to cycle through tests at different baud rates, parity settings, e.t.c).
+Serial port testing cannot really be done easily on cloud-based CICD platforms, as serial ports and devices connected to these ports are not readily available (nor configurable). `CppLinuxSerial` relies on running tests manually on your local Linux OS, alongside a connected Arduino Uno configured to echo serial data back (at a later data this could be reconfigured to cycle through tests at different baud rates, parity settings, e.t.c).
 
 ### Prerequisites
 

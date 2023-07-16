@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+## [v2.7.2] - 2023-07-16
+
+- Changed CICD runner from TravisCI to GitHub Actions.
+- Fixed some spelling errors in the README (thanks @JensvanEsch).
+
 ## [v2.7.1] - 2023-03-16
 
 - CMake config updated with exporting and generation of a CMake config file so that end users can simply do (thanks to https://github.com/borgmanJeremy for this contribution):
