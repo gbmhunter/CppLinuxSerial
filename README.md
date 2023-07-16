@@ -57,11 +57,11 @@ Library for communicating with COM ports on a Linux system.
 	$ make run_unit_tests
 	```
 
-	NOTE: The unit tests used to use virtual serial ports via `stty` on Linux to do more through testing. I ran into permission problems running stty on TravisCI after they did an update and had to remove tests (leaving almost no tests remaining). If anyone wants to add better unit tests, it is greatly welcomed! 
+	NOTE: The unit tests used to use virtual serial ports via `stty` on Linux to do more thorough testing. I ran into permission problems running stty on TravisCI after they did an update and had to remove tests (leaving almost no tests remaining). If anyone wants to add better unit tests, it is greatly welcomed! 
 
-## Using This Project As A CMake Deoendency
+## Using This Project As A CMake Dependency
 
-This project uses CMake and the export feature, so in a downstream CMake project that uses CppLinuxSerial as a dependency you should just be able to do (thanks to https://github.com/borgmanJeremy for this contribution):
+This project uses CMake and the export feature, so in a downstream CMake project that uses CppLinuxSerial as a dependency you should just be able to do this (thanks to https://github.com/borgmanJeremy for this contribution):
 
 ```cmake
 find_package(CppLinuxSerial REQUIRED)
@@ -78,7 +78,7 @@ target_link_libraries(target CppLinuxSerial::CppLinuxSerial)
 using namespace mn::CppLinuxSerial;
 
 int main() {
-	// Create serial port object and open serial port at 57600 buad, 8 data bits, no parity bit, one stop bit (8n1),
+	// Create serial port object and open serial port at 57600 baud, 8 data bits, no parity bit, one stop bit (8n1),
 	// and no flow control
 	SerialPort serialPort("/dev/ttyUSB0", BaudRate::B_57600, NumDataBits::EIGHT, Parity::NONE, NumStopBits::ONE);
 	// Use SerialPort serialPort("/dev/ttyACM0", 13000); instead if you want to provide a custom baud rate
@@ -170,7 +170,7 @@ sudo chmod 666 /dev/ttyACM0
 
 Serial port testing cannot really be done easily on cloud-based CICD platforms, as serial ports and devices connected to these ports are not readibly available (nor configurable). `CppLinuxSerial` relies on running tests manually on your local Linux OS, alongside a connected Arduino Uno configured to echo serial data back (at a later data this could be reconfigured to cycle through tests at different baud rates, parity settings, e.t.c).
 
-### Prerequisties
+### Prerequisites
 
 You will need:
 
