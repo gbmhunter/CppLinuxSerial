@@ -484,13 +484,7 @@ namespace CppLinuxSerial {
     }
 
     void SerialPort::Write(const std::string& data) {
-
-        if(state_ != State::OPEN)
-            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
-
-        if(fileDesc_ < 0) {
-            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but file descriptor < 0, indicating file has not been opened.");
-        }
+        PortIsOpened(__PRETTY_FUNCTION__);
 
         int writeResult = write(fileDesc_, data.c_str(), data.size());
 
@@ -501,13 +495,7 @@ namespace CppLinuxSerial {
     }
 
     void SerialPort::WriteBinary(const std::vector<uint8_t>& data) {
-
-        if(state_ != State::OPEN)
-            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
-
-        if(fileDesc_ < 0) {
-            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but file descriptor < 0, indicating file has not been opened.");
-        }
+        PortIsOpened(__PRETTY_FUNCTION__);
 
         int writeResult = write(fileDesc_, data.data(), data.size());
 
@@ -518,11 +506,7 @@ namespace CppLinuxSerial {
     }
 
     void SerialPort::Read(std::string& data) {
-        if(fileDesc_ == 0) {
-            //this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
-            //return false;
-            THROW_EXCEPT("Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
-        }
+        PortIsOpened(__PRETTY_FUNCTION__);
 
         // Read from file
         // We provide the underlying raw array from the readBuffer_ vector to this C api.
@@ -552,11 +536,7 @@ namespace CppLinuxSerial {
     }
 
     void SerialPort::ReadBinary(std::vector<uint8_t>& data) {
-        if(fileDesc_ == 0) {
-            //this->sp->PrintError(SmartPrint::Ss() << "Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
-            //return false;
-            THROW_EXCEPT("Read() was called but file descriptor (fileDesc) was 0, indicating file has not been opened.");
-        }
+        PortIsOpened(__PRETTY_FUNCTION__);
 
         // Read from file
         // We provide the underlying raw array from the readBuffer_ vector to this C api.
@@ -639,6 +619,17 @@ namespace CppLinuxSerial {
         ioctl(fileDesc_, TCSETS2, &tty);
     }
 
+    void SerialPort::PortIsOpened(const std::string& prettyFunc) {
+
+        if(state_ != State::OPEN) {
+            THROW_EXCEPT(std::string() + prettyFunc + " called but state != OPEN. Please call Open() first.");
+        }
+
+        if(fileDesc_ < 0) {
+            THROW_EXCEPT(std::string() + prettyFunc + " called but file descriptor < 0, indicating file has not been opened.");
+        }
+    }
+
     void SerialPort::Close() {
         if(fileDesc_ != -1) {
             auto retVal = close(fileDesc_);
@@ -662,8 +653,8 @@ namespace CppLinuxSerial {
     }
     
     int32_t SerialPort::Available() {
-        if(state_ != State::OPEN)
-            THROW_EXCEPT(std::string() + __PRETTY_FUNCTION__ + " called but state != OPEN. Please call Open() first.");
+        PortIsOpened(__PRETTY_FUNCTION__);
+
         int32_t ret = 0;
         ioctl(fileDesc_, FIONREAD, &ret);
         return ret;
