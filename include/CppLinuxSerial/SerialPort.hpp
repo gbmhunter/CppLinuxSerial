@@ -209,9 +209,9 @@ namespace mn {
             /// \brief      Assigns the provided tty settings to the serial port pointed to by the file descriptor.
             void SetTermios2(termios2 tty);
 
-            /// \brief      checks whether the port is open or not
-            /// \param      prettyFunc  Function details obtained using __PRETTY_FUNCTION__
-            /// \throws     CppLinuxSerial::Exception if port is not opened
+            /// \brief      Checks whether the port is open or not,
+            /// \param      prettyFunc  Pass in function details obtained using __PRETTY_FUNCTION__ for useful exception messages.
+            /// \throws     CppLinuxSerial::Exception if port is not opened.
             void PortIsOpened(const std::string& prettyFunc);
 
             /// \brief      Keeps track of the serial port's state.

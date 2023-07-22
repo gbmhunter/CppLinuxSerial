@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [v2.8.0] - 2023-07-22
+
+- Improved error checking in read/write commands. (thanks @meetgandhi-eic).
+
 ## [v2.7.2] - 2023-07-16
 
 - Changed CICD runner from TravisCI to GitHub Actions.
