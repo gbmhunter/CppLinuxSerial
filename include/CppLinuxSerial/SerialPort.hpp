@@ -21,6 +21,9 @@
 #include <asm/ioctls.h>
 #include <asm/termbits.h>
 
+// uint8_t
+#include <cstdint>
+
 // User headers
 #include "Exception.hpp"
 
