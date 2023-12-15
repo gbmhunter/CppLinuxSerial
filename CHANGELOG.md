@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [v2.8.1] - 2023-12-16
+
+- Added missing header include (thanks [Uglješa Lukešević](https://github.com/ukicomputers)).
+- Added missing compare links to the CHANGELOG.
+
 ## [v2.8.0] - 2023-07-22
 
 - Improved error checking in read/write commands. (thanks @meetgandhi-eic).
@@ -135,7 +140,24 @@ Big thanks to https://github.com/MadsAndreasen-Zoetis for these improvements.
 ### Added
 - Initial commit. serial-port-cpp library has basic functions up and running.
 
-[Unreleased]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.1...HEAD
-[v2.0.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.1...v2.0.0
-[v2.0.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.0...v1.0.1
-[v1.0.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v1.0.1...v1.0.0
+[Unreleased]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.1...HEAD
+[v2.8.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.0...v2.8.1
+[v2.8.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.7.2...v2.8.0
+[v2.7.2]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.7.1...v2.7.2
+[v2.7.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.7.0...v2.7.1
+[v2.7.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.6.0...v2.7.0
+[v2.6.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.5.0...v2.6.0
+[v2.5.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.4.0...v2.5.0
+[v2.4.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.3.0...v2.4.0
+[v2.3.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.2.1...v2.3.0
+[v2.2.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.2.0...v2.2.1
+[v2.2.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.1.2...v2.2.0
+[v2.1.2]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.1.1...v2.1.2
+[v2.1.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.1.0...v2.1.1
+[v2.1.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.3...v2.1.0
+[v2.0.3]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.2...v2.0.3
+[v2.0.2]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.1...v2.0.2
+[v2.0.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.0.0...v2.0.1
+[v2.0.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v1.0.1...v2.0.0
+[v1.0.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v1.0.0...v1.0.1
+[v1.0.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/...v1.0.0
