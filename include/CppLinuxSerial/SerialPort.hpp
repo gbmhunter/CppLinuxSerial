@@ -145,7 +145,7 @@ namespace mn {
             void SetNumStopBits(NumStopBits numStopBits);
 
             /// \brief      Sets the read timeout (in milliseconds)/blocking mode.
-            /// \details    Only call when state != OPEN. This method manupulates VMIN and VTIME.
+            /// \details    Only call when state != OPEN. This method manipulates VMIN and VTIME.
             /// \param      timeout_ms  Set to -1 to infinite timeout, 0 to return immediately with any data (non
             ///             blocking, or >0 to wait for data for a specified number of milliseconds). Timeout will
             ///             be rounded to the nearest 100ms (a Linux API restriction). Maximum value limited to
