@@ -123,7 +123,7 @@ namespace mn {
             SerialPort(const std::string &device, speed_t baudRate);
 
             /// \brief      Destructor. Closes serial port if still open.
-            virtual ~SerialPort();
+            ~SerialPort();
 
             /// \brief      Sets the device to use for serial port communications.
             /// \details    Method can be called when serial port is in any state.
