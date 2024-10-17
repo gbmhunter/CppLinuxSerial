@@ -25,9 +25,8 @@
 // User headers
 #include "Exception.hpp"
 
-typedef struct termios2;
-typedef struct speed_t;
-
+struct termios2;
+struct speed_t;
 namespace mn {
     namespace CppLinuxSerial {
 
