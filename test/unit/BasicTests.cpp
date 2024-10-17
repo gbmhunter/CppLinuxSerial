@@ -7,6 +7,8 @@
 /// \details
 ///					See README.rst in repo root dir for more info.
 
+#include <asm/termbits.h>
+
 // System includes
 #include "gtest/gtest.h"
 
