@@ -26,7 +26,7 @@
 #include "Exception.hpp"
 
 struct termios2;
-
+struct speed_t;
 namespace mn {
     namespace CppLinuxSerial {
 
