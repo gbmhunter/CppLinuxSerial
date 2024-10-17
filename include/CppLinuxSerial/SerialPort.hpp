@@ -19,13 +19,13 @@
 // #include <asm/termios.h> // Terminal control definitions (struct termios)
 #include <vector>
 #include <asm/ioctls.h>
-#include <asm/termbits.h>
-
 // uint8_t
 #include <cstdint>
 
 // User headers
 #include "Exception.hpp"
+
+struct termios2;
 
 namespace mn {
     namespace CppLinuxSerial {
