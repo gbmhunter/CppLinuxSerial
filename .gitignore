@@ -9,3 +9,4 @@ docs/_build/
 # Build artifacts
 a.out
 test/arduino/test
+*.swp

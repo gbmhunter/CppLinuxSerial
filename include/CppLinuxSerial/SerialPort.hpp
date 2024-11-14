@@ -19,13 +19,13 @@
 // #include <asm/termios.h> // Terminal control definitions (struct termios)
 #include <vector>
 #include <asm/ioctls.h>
-#include <asm/termbits.h>
-
 // uint8_t
 #include <cstdint>
 
 // User headers
 #include "Exception.hpp"
+
+struct termios2;
 
 namespace mn {
     namespace CppLinuxSerial {
@@ -123,7 +123,7 @@ namespace mn {
             SerialPort(const std::string &device, speed_t baudRate);
 
             /// \brief      Destructor. Closes serial port if still open.
-            virtual ~SerialPort();
+            ~SerialPort();
 
             /// \brief      Sets the device to use for serial port communications.
             /// \details    Method can be called when serial port is in any state.
