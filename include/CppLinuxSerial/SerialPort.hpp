@@ -2,7 +2,7 @@
 /// \file 			SerialPort.hpp
 /// \author 		Geoffrey Hunter <gbmhunter@gmail.com> (www.mbedded.ninja)
 /// \created		2014-01-07
-/// \last-modified 	2023-02-13
+/// \last-modified 	2024-11-16
 /// \brief			The main serial port class.
 /// \details
 ///					See README.rst in repo root dir for more info.
@@ -15,7 +15,7 @@
 #include <string>
 #include <fstream> // For file I/O (reading/writing to COM port)
 #include <sstream>
-// #include <termios.h> // POSIX terminal control definitions (struct termios)
+#include <termios.h> // Required for speed_t
 // #include <asm/termios.h> // Terminal control definitions (struct termios)
 #include <vector>
 #include <asm/ioctls.h>
