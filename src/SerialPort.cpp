@@ -8,7 +8,6 @@
 //!             See README.rst in repo root dir for more info.
 
 // System includes
-#include <asm/termbits.h>
 #include <iostream>
 #include <sstream>
 #include <stdio.h>      // Standard input/output definitions

@@ -15,10 +15,11 @@
 #include <string>
 #include <fstream> // For file I/O (reading/writing to COM port)
 #include <sstream>
-#include <termios.h> // Required for speed_t
+// #include <termios.h> // This used to be included, but caused issues when variable baud rate support was added
 // #include <asm/termios.h> // Terminal control definitions (struct termios)
 #include <vector>
 #include <asm/ioctls.h>
+#include <asm/termbits.h> // Required for speed_t
 // uint8_t
 #include <cstdint>
 
