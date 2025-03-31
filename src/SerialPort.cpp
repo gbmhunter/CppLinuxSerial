@@ -40,7 +40,7 @@ namespace CppLinuxSerial {
         baudRateType_ = BaudRateType::STANDARD;
         baudRateStandard_ = defaultBaudRate_;
         readBufferSize_B_ = defaultReadBufferSize_B_;
-        readBuffer_.reserve(readBufferSize_B_);
+        readBuffer_.resize(readBufferSize_B_);
         state_ = State::CLOSED;
     }
 

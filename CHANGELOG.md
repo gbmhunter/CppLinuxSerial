@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
+## [2.8.3] - 2025-04-01
+
+- Changed the read buffers allocation from `reserve()` to `resize()`. This should fix potential crashes due to a misuse of the C++ std API.
+
 ## [2.8.2] - 2024-06-02
 
 - Fix bug where this project could not be added into another CMake file with `add_subdirectory()` correctly (thanks [alexg-k](https://github.com/alexg-k)).
@@ -144,7 +148,8 @@ Big thanks to https://github.com/MadsAndreasen-Zoetis for these improvements.
 ### Added
 - Initial commit. serial-port-cpp library has basic functions up and running.
 
-[Unreleased]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.2...HEAD
+[Unreleased]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.3...HEAD
+[v2.8.3]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.2...v2.8.3
 [v2.8.2]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.1...v2.8.2
 [v2.8.1]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.8.0...v2.8.1
 [v2.8.0]: https://github.com/mbedded-ninja/CppLinuxSerial/compare/v2.7.2...v2.8.0
