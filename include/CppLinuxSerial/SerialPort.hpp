@@ -249,7 +249,7 @@ namespace mn {
             SoftwareFlowControl softwareFlowControl_ = SoftwareFlowControl::OFF;
 
             /// \brief      The file descriptor for the open file. This gets written to when Open() is called.
-            int fileDesc_;
+            int fileDesc_ = -1;
 
             bool echo_;
 
