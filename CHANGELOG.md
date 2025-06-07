@@ -7,9 +7,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Unreleased
 
-## [2.8.4] - 2025-05-08
+## [2.8.5] - 2025-06-08
 
 - Fixed bug where if SerialPort is destroyed before Open has been called, it attempts to close using an uninitialised file descriptor, closes #57.
+
+## [2.8.4] - 2025-04-09
+
+- Added support for CMake 4.0+ by dropping support for CMake 3.1 and setting the minimum required CMake version to 3.5.
 
 ## [2.8.3] - 2025-04-01
 
